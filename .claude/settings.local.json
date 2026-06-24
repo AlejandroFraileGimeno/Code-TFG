@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(gh --version)",
+      "Read(//c/Users/aleja/OneDrive/Descargas/**)",
+      "Bash(mkdir -p /tmp/paraalejandro)",
+      "Bash(unzip -o ParaAlejandro.zip -d /tmp/paraalejandro)",
+      "PowerShell(Write-Output \"=== Python ===\"; try { python --version } catch { Write-Output \"python no encontrado\" }; try { py --version } catch {}; Write-Output \"=== pip ===\"; try { python -m pip --version } catch { Write-Output \"pip no encontrado\" }; Write-Output \"=== VS Code ===\"; try { \\(Get-Command code\\).Source } catch { Write-Output \"code CLI no encontrado\" }; Write-Output \"=== git ===\"; try { git --version } catch { Write-Output \"git no encontrado\" })",
+      "Bash(./.venv/Scripts/python.exe -c \"import tensorflow; print\\('TF OK', tensorflow.__version__\\)\")",
+      "Bash(cd \"/c/Users/aleja/OneDrive/Escritorio/Claude Code/Código Lucía/ParaAlejandro\" && echo \"=== Carpetas NN_Code ===\" && find NN_Code -maxdepth 3 -type f 2>/dev/null | grep -v Dataset | head -40)",
+      "mcp__visualize__show_widget"
+    ]
+  }
+}

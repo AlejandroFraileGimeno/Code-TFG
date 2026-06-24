@@ -1,0 +1,9 @@
+# Entorno virtual (no se sube ni se sincroniza)
+.venv/
+
+# Cache de Python
+__pycache__/
+*.pyc
+
+# Salidas generadas
+ParaAlejandro/NN_Code/

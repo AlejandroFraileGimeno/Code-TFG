@@ -1,0 +1,122 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "[CD] 1) Generar dataset (rapido)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\ParaAlejandro\\generate_dataset_parallel.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\ParaAlejandro",
+      "justMyCode": true
+    },
+    {
+      "name": "[CD] 2) Entrenar",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\ParaAlejandro\\train.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\ParaAlejandro",
+      "justMyCode": true
+    },
+    {
+      "name": "[CD] 3) Inferencia NN vs TMM",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\ParaAlejandro\\TMM_NN.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\ParaAlejandro",
+      "justMyCode": true
+    },
+    {
+      "name": "[CD] 4) Evaluar modelo",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\ParaAlejandro\\evaluar_modelo.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\ParaAlejandro",
+      "justMyCode": true
+    },
+    {
+      "name": "[CD] 5) Graficar entrenamiento",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\ParaAlejandro\\plot_history.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\ParaAlejandro",
+      "justMyCode": true
+    },
+    {
+      "name": "[CD] 6) Pintar CD del modelo",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\ParaAlejandro\\plot_cd.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\ParaAlejandro",
+      "justMyCode": true
+    },
+    {
+      "name": "[T_ss] 1) Generar dataset (rapido)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Transmision_Tss\\generate_dataset_parallel.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Transmision_Tss",
+      "justMyCode": true
+    },
+    {
+      "name": "[T_ss] 2) Entrenar",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Transmision_Tss\\train.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Transmision_Tss",
+      "justMyCode": true
+    },
+    {
+      "name": "[T_ss] 3) Inferencia NN vs TMM",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Transmision_Tss\\TMM_NN.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Transmision_Tss",
+      "justMyCode": true
+    },
+    {
+      "name": "[T_ss] 4) Evaluar modelo",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Transmision_Tss\\evaluar_modelo.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Transmision_Tss",
+      "justMyCode": true
+    },
+    {
+      "name": "[T_ss] 5) Graficar entrenamiento",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Transmision_Tss\\plot_history.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Transmision_Tss",
+      "justMyCode": true
+    },
+    {
+      "name": "[T_ss] 6) Pintar T_ss del modelo",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Transmision_Tss\\plot_tss.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Transmision_Tss",
+      "justMyCode": true
+    },
+    {
+      "name": "Archivo actual (cualquier proyecto)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "cwd": "${fileDirname}",
+      "justMyCode": true
+    }
+  ]
+}
