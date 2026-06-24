@@ -66,7 +66,7 @@ def train_models(
     minib_size = 4096
 
     seed_list = auxf.load_seed_list()
-    num_simulations = 1  # change for training multiple seeds
+    num_simulations = 5  # change for training multiple seeds
     list_simulations = [i for i in range(num_simulations)]
 
     # Loop over seeds

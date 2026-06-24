@@ -24,12 +24,15 @@ from generalized_transfer_matrix_method import (
 import utils_nn_forward as auxf
 
 
-def evaluate(model_dir, database, num_seed=1, N=50, alpha=0):
+def evaluate(model_dir, database, num_seeds=5, N=50, alpha=0):
     freqs = np.linspace(600, 1100, 1000)
-    model_path = Path(model_dir) / f"Model_{num_seed}seed" / f"Model_{num_seed}seed.h5"
-    scaler_path = Path(model_dir) / f"Model_{num_seed}seed" / "scalers.json"
 
-    model = models.load_model(model_path, compile=False)
+    models_list, scaler_paths = [], []
+    for i in range(1, num_seeds + 1):
+        model_path = Path(model_dir) / f"Model_{i}seed" / f"Model_{i}seed.h5"
+        scaler_path = Path(model_dir) / f"Model_{i}seed" / "scalers.json"
+        models_list.append(models.load_model(model_path, compile=False))
+        scaler_paths.append(scaler_path)
 
     r2_list, mae_list, rmse_list = [], [], []
 
@@ -56,8 +59,12 @@ def evaluate(model_dir, database, num_seed=1, N=50, alpha=0):
             np.full(len(freqs), d2),
             freqs,
         ])
-        CD_pred_batch, _ = auxf.predict(model, params, database, scaler_path=scaler_path)
-        CD_pred = np.array([abs(float(np.squeeze(cd))) for cd in CD_pred_batch])
+
+        preds = []
+        for m, sp in zip(models_list, scaler_paths):
+            CD_pred_batch, _ = auxf.predict(m, params, database, scaler_path=sp)
+            preds.append([abs(float(np.squeeze(cd))) for cd in CD_pred_batch])
+        CD_pred = np.mean(preds, axis=0)
 
         ss_res = np.sum((CD_true - CD_pred) ** 2)
         ss_tot = np.sum((CD_true - np.mean(CD_true)) ** 2)
@@ -71,7 +78,7 @@ def evaluate(model_dir, database, num_seed=1, N=50, alpha=0):
 
         print(f"[{i+1:3d}/{N}] d1={d1:4d} d2={d2:4d} theta={theta:3d}° | R²={r2:.4f}  MAE={mae:.6f}  RMSE={rmse:.6f}")
 
-    print(f"\n--- Promedio sobre {N} configuraciones ---")
+    print(f"\n--- Promedio sobre {N} configuraciones ({num_seeds} modelos) ---")
     print(f"R²   = {np.mean(r2_list):.4f} ± {np.std(r2_list):.4f}")
     print(f"MAE  = {np.mean(mae_list):.6f} ± {np.std(mae_list):.6f}")
     print(f"RMSE = {np.mean(rmse_list):.6f} ± {np.std(rmse_list):.6f}")
@@ -81,6 +88,6 @@ if __name__ == "__main__":
     evaluate(
         model_dir=str(ROOT_PATH / "Models" / "CD" / "MoO3_MoO3"),
         database=str(ROOT_PATH / "Datasets" / "CD" / "MoO3_MoO3"),
-        num_seed=1,
+        num_seeds=5,
         N=50,
     )
