@@ -14,27 +14,27 @@
       "name": "[CD] 2) Entrenar",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}\\ParaAlejandro\\train.py",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Train\\train.py",
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}\\ParaAlejandro",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Train",
       "justMyCode": true
     },
     {
       "name": "[CD] 3) Inferencia NN vs TMM",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}\\ParaAlejandro\\TMM_NN.py",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Evaluación\\TMM_NN.py",
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}\\ParaAlejandro",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Evaluación",
       "justMyCode": true
     },
     {
       "name": "[CD] 4) Evaluar modelo",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}\\ParaAlejandro\\evaluar_modelo.py",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Evaluación\\evaluar_modelo.py",
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}\\ParaAlejandro",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Evaluación",
       "justMyCode": true
     },
     {
@@ -50,9 +50,9 @@
       "name": "[CD] 6) Pintar CD del modelo",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}\\ParaAlejandro\\plot_cd.py",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Evaluación\\plot_cd.py",
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}\\ParaAlejandro",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Evaluación",
       "justMyCode": true
     },
     {
