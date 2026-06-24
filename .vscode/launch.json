@@ -2,12 +2,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "[CD] 1) Generar dataset (rapido)",
+      "name": "[CD] 1) Generar dataset",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}\\ParaAlejandro\\generate_dataset_parallel.py",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Generación\\generate_database.py",
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}\\ParaAlejandro",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Generación",
       "justMyCode": true
     },
     {
