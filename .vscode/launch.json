@@ -56,6 +56,15 @@
       "justMyCode": true
     },
     {
+      "name": "[CD] 7) DE optimizer (NN surrogate)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Optimization\\CD\\MoO3_MoO3\\DE\\de_optimizer.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Optimization\\CD\\MoO3_MoO3\\DE",
+      "justMyCode": true
+    },
+    {
       "name": "[T_ss] 1) Generar dataset (rapido)",
       "type": "debugpy",
       "request": "launch",
