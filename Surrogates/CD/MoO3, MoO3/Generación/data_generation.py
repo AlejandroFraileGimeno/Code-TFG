@@ -15,6 +15,8 @@ formato de dataset que espera el pipeline:
                          donde CD_norm = (R_r - R_l) / (R_r + R_l)
                          es decir abs(calculate_circular_dichroism_ref(...)[1])
                          (el mismo valor que usa run_inference como "CD true").
+- R_total_spectra.csv -> matriz (n_estructuras, n_freqs) con R_total = R_r + R_l
+                         es decir calculate_circular_dichroism_ref(...)[2].
 
 Estructura (bicapa): [ MoO3(d1, phi=theta), MoO3(d2, phi=0) ]
 con superestrato/substrato pasados como argumento (Air / Au por defecto).
@@ -63,6 +65,7 @@ def generate_data(
     seeds = np.loadtxt(seed_file, dtype=int) if seed_file is not None else None
 
     CD_spectra_norm_list = np.empty((n_data, n_freqs), dtype=float)
+    R_total_spectra_list = np.empty((n_data, n_freqs), dtype=float)
     angles = np.empty((n_data, 1), dtype=float)
     thickness = np.empty((n_data, 2), dtype=float)
 
@@ -84,6 +87,7 @@ def generate_data(
         for j in range(n_freqs):
             cd = calculate_circular_dichroism_ref(freqs[j], alpha, structure)
             CD_spectra_norm_list[i, j] = abs(cd[1])
+            R_total_spectra_list[i, j] = cd[2]
 
         angles[i, 0] = theta
         thickness[i, 0] = d1
@@ -92,16 +96,18 @@ def generate_data(
         if (i + 1) % 100 == 0 or (i + 1) == n_data:
             print(f"  generadas {i + 1}/{n_data} estructuras", flush=True)
 
-    return CD_spectra_norm_list, angles, thickness
+    return CD_spectra_norm_list, R_total_spectra_list, angles, thickness
 
 
-def save_dataset(CD_spectra_norm_list, angles, thickness, output_dir):
+def save_dataset(CD_spectra_norm_list, R_total_spectra_list, angles, thickness, output_dir):
     """Guarda el dataset en CSV sin cabecera (formato que lee load_database)."""
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     np.savetxt(output_dir / "CD_spectra_norm.csv",
                np.asarray(CD_spectra_norm_list, dtype=float), delimiter=",")
+    np.savetxt(output_dir / "R_total_spectra.csv",
+               np.asarray(R_total_spectra_list, dtype=float), delimiter=",")
     np.savetxt(output_dir / "angles.csv",
                np.asarray(angles, dtype=float), delimiter=",")
     np.savetxt(output_dir / "thickness.csv",

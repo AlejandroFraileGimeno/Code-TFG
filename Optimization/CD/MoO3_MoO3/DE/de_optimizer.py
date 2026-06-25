@@ -5,7 +5,11 @@ Differential Evolution — CD optimizer (NN surrogate)
 ===========================================================
 Optimiza la estructura MoO3/MoO3 para maximizar el pico de
 dicroísmo circular en una longitud de onda objetivo,
-usando el ensemble de redes neuronales como modelo directo.
+usando dos ensembles de redes neuronales como modelos directos:
+  - CD_norm  : (R_r - R_l) / (R_r + R_l)
+  - R_total  : R_r + R_l
+
+FoM = C1 × CD_norm_peak + C2 × R_total_at_peak   (C1 >> C2)
 
 Parámetros libres : theta (°), d1 (nm), d2 (nm)
 Estructura        : Air / MoO3(d1, phi=theta) / MoO3(d2) / Au
@@ -30,7 +34,9 @@ from tensorflow.keras import models as tf_models
 # ---------------------------------------------------------------------------
 TARGET_WAVELENGTH_UM = 15.4    # µm  (longitud de onda objetivo)
 WINDOW_CM            = 50.0    # cm⁻¹ (ventana de búsqueda del pico)
-NUM_SEEDS            = 1       # modelos del ensemble
+NUM_SEEDS            = 5       # modelos del ensemble
+C1                   = 1.0    # peso de CD_norm  (dominante)
+C2                   = 0.1    # peso de R_total  (secundario)
 MAXITER              = 200     # generaciones máximas del DE
 POPSIZE              = 15      # individuos por parámetro (población = 15 × 3 = 45)
 BOUNDS = [                     # [theta (°), d1 (nm), d2 (nm)]
@@ -55,23 +61,33 @@ import utils_nn_forward as auxf
 FREQS          = np.linspace(600, 1100, 1000)                                        # cm⁻¹
 TARGET_FREQ_CM = (1e4 / TARGET_WAVELENGTH_UM) if TARGET_WAVELENGTH_UM else None      # cm⁻¹
 
-_MODEL_DIR = ROOT_PATH / "Models" / "CD" / "MoO3_MoO3"
-_DATABASE  = str(ROOT_PATH / "Datasets" / "CD" / "MoO3_MoO3")
+_CD_MODEL_DIR = ROOT_PATH / "Models" / "CD"      / "MoO3_MoO3"
+_RT_MODEL_DIR = ROOT_PATH / "Models" / "R_total" / "MoO3_MoO3"
+_DATABASE     = str(ROOT_PATH / "Datasets" / "CD" / "MoO3_MoO3")
 
-print(f"Cargando {NUM_SEEDS} modelos...")
-_models, _scalers = [], []
+print(f"Cargando {NUM_SEEDS} modelos CD_norm...")
+_models_cd, _scalers_cd = [], []
 for i in range(1, NUM_SEEDS + 1):
-    _models.append(tf_models.load_model(
-        _MODEL_DIR / f"Model_{i}seed" / f"Model_{i}seed.h5", compile=False
+    _models_cd.append(tf_models.load_model(
+        _CD_MODEL_DIR / f"Model_{i}seed" / f"Model_{i}seed.h5", compile=False
     ))
-    _scalers.append(str(_MODEL_DIR / f"Model_{i}seed" / "scalers.json"))
-print(f"Listo. Target: {TARGET_WAVELENGTH_UM} µm  ({TARGET_FREQ_CM:.1f} cm⁻¹)\n")
+    _scalers_cd.append(str(_CD_MODEL_DIR / f"Model_{i}seed" / "scalers.json"))
+
+print(f"Cargando {NUM_SEEDS} modelos R_total...")
+_models_rt, _scalers_rt = [], []
+for i in range(1, NUM_SEEDS + 1):
+    _models_rt.append(tf_models.load_model(
+        _RT_MODEL_DIR / f"Model_{i}seed" / f"Model_{i}seed.h5", compile=False
+    ))
+    _scalers_rt.append(str(_RT_MODEL_DIR / f"Model_{i}seed" / "scalers.json"))
+
+print(f"Listo. Target: {TARGET_WAVELENGTH_UM} um  ({TARGET_FREQ_CM:.1f} cm-1)\n")
 
 
 # ---------------------------------------------------------------------------
-# Predicción del ensemble
+# Predicción de los ensembles
 # ---------------------------------------------------------------------------
-def _predict_cd(theta, d1, d2):
+def _predict_ensemble(models_list, scalers_list, theta, d1, d2):
     params_batch = np.column_stack([
         np.full(len(FREQS), theta),
         np.full(len(FREQS), d1),
@@ -79,10 +95,16 @@ def _predict_cd(theta, d1, d2):
         FREQS,
     ])
     preds = []
-    for m, sp in zip(_models, _scalers):
-        cd_batch, _ = auxf.predict(m, params_batch, _DATABASE, scaler_path=sp)
-        preds.append([abs(float(np.squeeze(v))) for v in cd_batch])
+    for m, sp in zip(models_list, scalers_list):
+        batch, _ = auxf.predict(m, params_batch, _DATABASE, scaler_path=sp)
+        preds.append([abs(float(np.squeeze(v))) for v in batch])
     return np.mean(preds, axis=0)
+
+def _predict_cd(theta, d1, d2):
+    return _predict_ensemble(_models_cd, _scalers_cd, theta, d1, d2)
+
+def _predict_r_total(theta, d1, d2):
+    return _predict_ensemble(_models_rt, _scalers_rt, theta, d1, d2)
 
 
 # ---------------------------------------------------------------------------
@@ -145,23 +167,32 @@ def _analizar_cd(freqs, cd, target_freq, window):
 # ---------------------------------------------------------------------------
 _eval_count = [0]
 
+def _combined_fom(theta, d1, d2):
+    cd        = _predict_cd(theta, d1, d2)
+    info      = _analizar_cd(FREQS, cd, TARGET_FREQ_CM, WINDOW_CM)
+    r_total   = _predict_r_total(theta, d1, d2)
+    idx_peak  = int(np.argmin(np.abs(FREQS - info["f_peak"])))
+    r_at_peak = float(r_total[idx_peak])
+    fom       = C1 * info["FoM"] + C2 * r_at_peak
+    return fom, info, r_at_peak
+
+
 def objective(params):
     theta, d1, d2 = params
     _eval_count[0] += 1
-    cd   = _predict_cd(theta, d1, d2)
-    info = _analizar_cd(FREQS, cd, TARGET_FREQ_CM, WINDOW_CM)
-    return -info["FoM"]   # DE minimiza → maximizamos FoM
+    fom, _, _ = _combined_fom(theta, d1, d2)
+    return -fom   # DE minimiza → maximizamos FoM
 
 
 def _callback(xk, convergence):
     theta, d1, d2 = xk
-    cd   = _predict_cd(theta, d1, d2)
-    info = _analizar_cd(FREQS, cd, TARGET_FREQ_CM, WINDOW_CM)
+    fom, info, r_at_peak = _combined_fom(theta, d1, d2)
     lambda_peak = 1e4 / info["f_peak"] if info["f_peak"] else float("nan")
     print(
-        f"  eval={_eval_count[0]:5d} | FoM={info['FoM']:.4f} | "
-        f"λ_pico={lambda_peak:.2f} µm | "
-        f"θ={theta:.1f}°  d1={d1:.0f}  d2={d2:.0f} nm | conv={convergence:.2e}"
+        f"  eval={_eval_count[0]:5d} | FoM={fom:.4f} | "
+        f"CD={info['CD_peak']:.3f}  R={r_at_peak:.3f} | "
+        f"lam_pico={lambda_peak:.2f} um | "
+        f"th={theta:.1f}deg  d1={d1:.0f}  d2={d2:.0f} nm | conv={convergence:.2e}"
     )
 
 
@@ -190,7 +221,7 @@ theta_best, d1_best, d2_best = result.x
 print(f"\n{'='*60}")
 print("  Resultado")
 print(f"{'='*60}")
-print(f"  θ  = {theta_best:.2f}°")
+print(f"  th = {theta_best:.2f} deg")
 print(f"  d1 = {d1_best:.1f} nm")
 print(f"  d2 = {d2_best:.1f} nm")
 print(f"  FoM (NN) = {-result.fun:.4f}   nfev = {result.nfev}")
@@ -207,15 +238,17 @@ structure = LayeredStructure(
         MoO3(d=d2_best * 1e-9),
     ],
 )
-CD_tmm = np.array([
-    abs(calculate_circular_dichroism_ref(f, 0, structure)[1]) for f in FREQS
-])
-CD_nn = _predict_cd(theta_best, d1_best, d2_best)
+tmm_results  = [calculate_circular_dichroism_ref(f, 0, structure) for f in FREQS]
+CD_tmm       = np.array([abs(r[1]) for r in tmm_results])
+R_total_tmm  = np.array([r[2]     for r in tmm_results])
+CD_nn        = _predict_cd(theta_best, d1_best, d2_best)
+R_total_nn   = _predict_r_total(theta_best, d1_best, d2_best)
 
 lambda_mu    = 1e4 / FREQS
 idx_tmm_best = int(np.argmax(CD_tmm))
-print(f"  TMM:  CD_max = {CD_tmm[idx_tmm_best]:.4f}  @  λ = {lambda_mu[idx_tmm_best]:.3f} µm")
-print(f"  NN:   CD_max = {np.max(CD_nn):.4f}")
+r_at_best    = R_total_tmm[idx_tmm_best]
+print(f"  TMM:  CD_max = {CD_tmm[idx_tmm_best]:.4f}  R_total = {r_at_best:.4f}  FoM = {CD_tmm[idx_tmm_best]*r_at_best:.4f}  @  lam = {lambda_mu[idx_tmm_best]:.3f} um")
+print(f"  NN:   CD_max = {np.max(CD_nn):.4f}  R_total = {R_total_nn[idx_tmm_best]:.4f}")
 
 # ---------------------------------------------------------------------------
 # Plot
@@ -223,19 +256,27 @@ print(f"  NN:   CD_max = {np.max(CD_nn):.4f}")
 results_dir = Path(__file__).parent / "results"
 results_dir.mkdir(exist_ok=True)
 
-fig, ax = plt.subplots(figsize=(9, 6))
-ax.scatter(lambda_mu, CD_tmm, s=5, c="red",  label="TMM (verdad)")
-ax.scatter(lambda_mu, CD_nn,  s=5, c="blue", label="NN surrogate")
-if TARGET_WAVELENGTH_UM is not None:
-    ax.axvline(TARGET_WAVELENGTH_UM, color="gray", ls="--", lw=1,
-               label=f"target  {TARGET_WAVELENGTH_UM} µm")
-ax.set_xlabel(r"$\lambda$ (µm)")
-ax.set_ylabel("CD reflection")
-ax.set_title(
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(9, 10), sharex=True)
+
+ax1.scatter(lambda_mu, CD_tmm,      s=5, c="red",    label="CD TMM")
+ax1.scatter(lambda_mu, CD_nn,       s=5, c="blue",   label="CD NN")
+ax2.scatter(lambda_mu, R_total_tmm, s=5, c="red",    label="R_total TMM")
+ax2.scatter(lambda_mu, R_total_nn,  s=5, c="blue",   label="R_total NN")
+
+for ax in (ax1, ax2):
+    if TARGET_WAVELENGTH_UM is not None:
+        ax.axvline(TARGET_WAVELENGTH_UM, color="gray", ls="--", lw=1,
+                   label=f"target  {TARGET_WAVELENGTH_UM} µm")
+    ax.legend()
+
+ax1.set_ylabel("CD reflection (normalizado)")
+ax2.set_ylabel("R_total = R_r + R_l")
+ax2.set_xlabel(r"$\lambda$ (µm)")
+fig.suptitle(
     f"DE óptimo — θ={theta_best:.1f}°   d1={d1_best:.0f} nm   d2={d2_best:.0f} nm\n"
-    f"CD_TMM = {CD_tmm[idx_tmm_best]:.4f}  @  λ = {lambda_mu[idx_tmm_best]:.3f} µm"
+    f"CD={CD_tmm[idx_tmm_best]:.4f}  R={r_at_best:.4f}  FoM={CD_tmm[idx_tmm_best]*r_at_best:.4f}  "
+    f"@  λ={lambda_mu[idx_tmm_best]:.3f} µm"
 )
-ax.legend()
 fig.tight_layout()
 
 save_path = results_dir / f"best_th{theta_best:.0f}_d1{d1_best:.0f}_d2{d2_best:.0f}.png"

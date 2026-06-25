@@ -16,7 +16,7 @@ N = 1000
 omega = [600, 1100]
 omegas = np.linspace(omega[0], omega[1], N)
 
-CD_spectra__norm_list, angles, thickness = generate_data(
+CD_spectra__norm_list, R_total_spectra_list, angles, thickness = generate_data(
     n_data=10000,
     bilayers=True,
     superstrate_mat=Air(),
@@ -29,4 +29,4 @@ CD_spectra__norm_list, angles, thickness = generate_data(
     seed_file=Path(__file__).resolve().parents[4] / "Seed" / "SEED_LIST.csv",
 )
 output_dir = Path(__file__).resolve().parents[4] / "Datasets" / "CD" / "MoO3_MoO3"
-save_dataset(CD_spectra__norm_list, angles, thickness, output_dir)
+save_dataset(CD_spectra__norm_list, R_total_spectra_list, angles, thickness, output_dir)

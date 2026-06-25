@@ -119,14 +119,13 @@ def unstandardize_data(data_std, mean_val, std_val):
     return data_std * std_val + mean_val
 
 
-def load_database(database):  # normalize_database
+def load_database(database, target_file="CD_spectra_norm.csv"):  # normalize_database
     file_angles = database + "/angles.csv"
     file_thickness = database + "/thickness.csv"
-    file_CD = database + "/CD_spectra_norm.csv"
-    # Check if the first column of angles.csv is all zeros (bilayer)
+    file_target = database + "/" + target_file
     angles_dataset_ref = read_single_csv(file_angles)
     thickness_dataset_ref = read_single_csv(file_thickness)
-    CD_dataset_ref = read_single_csv(file_CD)
+    CD_dataset_ref = read_single_csv(file_target)
 
     return (
         angles_dataset_ref,
@@ -159,7 +158,7 @@ def expand_dataset(angles, thickness, CD, freqs):
     return X, Y
 
 
-def prepare_data(ntrain, nvalidation, database, return_scalers=False):
+def prepare_data(ntrain, nvalidation, database, return_scalers=False, target_file="CD_spectra_norm.csv"):
     """
     Prepare normalized training and validation data.
 
@@ -183,7 +182,7 @@ def prepare_data(ntrain, nvalidation, database, return_scalers=False):
     yva_single : np.ndarray
         Validation targets.
     """
-    angles, thickness, CD = load_database(database)
+    angles, thickness, CD = load_database(database, target_file=target_file)
     n_structures = CD.shape[0]
     n_freqs = CD.shape[1]
 

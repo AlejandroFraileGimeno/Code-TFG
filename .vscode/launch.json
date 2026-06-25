@@ -11,6 +11,15 @@
       "justMyCode": true
     },
     {
+      "name": "[CD] 2b) Entrenar R_total",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Train\\train_r_total.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Train",
+      "justMyCode": true
+    },
+    {
       "name": "[CD] 2) Entrenar",
       "type": "debugpy",
       "request": "launch",
@@ -35,6 +44,33 @@
       "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Evaluación\\evaluar_modelo.py",
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[CD] 3b) R_total — Inferencia NN vs TMM",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Evaluación R_total\\TMM_NN.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[CD] 4b) R_total — Evaluar modelo",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Evaluación R_total\\evaluar_modelo.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[CD] 6b) R_total — Pintar espectro",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Evaluación R_total\\plot_r_total.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, MoO3\\Evaluación R_total",
       "justMyCode": true
     },
     {
