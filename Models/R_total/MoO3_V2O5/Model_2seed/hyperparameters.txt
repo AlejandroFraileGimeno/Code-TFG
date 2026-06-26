@@ -1,0 +1,7 @@
+n_train=8000
+n_val=2000
+epochs=200
+mbs=4096
+loss=Huber(delta=1.0)
+optimizer=Adam(learning_rate=1e-3)
+target=standardized_minmax_R_total

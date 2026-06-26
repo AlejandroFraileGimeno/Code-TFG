@@ -1,12 +1,5 @@
 """
-===========================================================
-Numerical evaluation
-===========================================================
-Computes R², MAE and RMSE between NN predictions and TMM
-ground truth over N random configurations. No plots.
-
-Author: [Lucia F. Alvarez-Tomillo / Alejandro Fraile]
-Date: [xx/xx/2026]
+Numerical evaluation — CD_norm surrogate (MoO3 / V2O5 bilayer)
 """
 
 import sys
@@ -19,7 +12,7 @@ sys.path.insert(0, str(ROOT_PATH / "TMM"))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from generalized_transfer_matrix_method import (
-    Air, Au, MoO3, LayeredStructure, calculate_circular_dichroism_ref,
+    Air, Au, MoO3, V2O5, LayeredStructure, calculate_circular_dichroism_ref,
 )
 import utils_nn_forward as auxf
 
@@ -29,7 +22,7 @@ def evaluate(model_dir, database, num_seeds=5, N=50, alpha=0):
 
     models_list, scaler_paths = [], []
     for i in range(1, num_seeds + 1):
-        model_path = Path(model_dir) / f"Model_{i}seed" / f"Model_{i}seed.h5"
+        model_path  = Path(model_dir) / f"Model_{i}seed" / f"Model_{i}seed.h5"
         scaler_path = Path(model_dir) / f"Model_{i}seed" / "scalers.json"
         models_list.append(models.load_model(model_path, compile=False))
         scaler_paths.append(scaler_path)
@@ -38,14 +31,13 @@ def evaluate(model_dir, database, num_seeds=5, N=50, alpha=0):
 
     for i in range(N):
         d1, d2 = np.random.randint(200, 2001, size=2)
-        theta = np.random.randint(0, 181)
+        theta   = np.random.randint(0, 181)
 
         structure = LayeredStructure(
-            superstrate=Air(),
-            substrate=Au(),
+            superstrate=Air(), substrate=Au(),
             layers=[
                 MoO3(d=d1 * 1e-9, phi=np.deg2rad(theta)),
-                MoO3(d=d2 * 1e-9),
+                V2O5(d=d2 * 1e-9),
             ],
         )
 
@@ -54,10 +46,8 @@ def evaluate(model_dir, database, num_seeds=5, N=50, alpha=0):
         ])
 
         params = np.column_stack([
-            np.full(len(freqs), theta),
-            np.full(len(freqs), d1),
-            np.full(len(freqs), d2),
-            freqs,
+            np.full(len(freqs), theta), np.full(len(freqs), d1),
+            np.full(len(freqs), d2), freqs,
         ])
 
         preds = []
@@ -68,14 +58,13 @@ def evaluate(model_dir, database, num_seeds=5, N=50, alpha=0):
 
         ss_res = np.sum((CD_true - CD_pred) ** 2)
         ss_tot = np.sum((CD_true - np.mean(CD_true)) ** 2)
-        r2 = 1 - ss_res / ss_tot if ss_tot > 1e-10 else None
-        mae = np.mean(np.abs(CD_true - CD_pred))
+        r2   = 1 - ss_res / ss_tot if ss_tot > 1e-10 else None
+        mae  = np.mean(np.abs(CD_true - CD_pred))
         rmse = np.sqrt(np.mean((CD_true - CD_pred) ** 2))
 
         if r2 is not None:
             r2_list.append(r2)
-        mae_list.append(mae)
-        rmse_list.append(rmse)
+        mae_list.append(mae); rmse_list.append(rmse)
 
         r2_str = f"{r2:.4f}" if r2 is not None else "N/A (espectro plano)"
         print(f"[{i+1:3d}/{N}] d1={d1:4d} d2={d2:4d} theta={theta:3d} | R2={r2_str}  MAE={mae:.6f}  RMSE={rmse:.6f}")
@@ -89,8 +78,7 @@ def evaluate(model_dir, database, num_seeds=5, N=50, alpha=0):
 
 if __name__ == "__main__":
     evaluate(
-        model_dir=str(ROOT_PATH / "Models" / "CD" / "MoO3_MoO3"),
-        database=str(ROOT_PATH / "Datasets" / "CD" / "MoO3_MoO3"),
-        num_seeds=5,
-        N=50,
+        model_dir=str(ROOT_PATH / "Models" / "CD" / "MoO3_V2O5"),
+        database=str(ROOT_PATH / "Datasets" / "CD" / "MoO3_V2O5"),
+        num_seeds=5, N=50,
     )

@@ -155,6 +155,186 @@
       "justMyCode": true
     },
     {
+      "name": "[MoO3-V2O5] 1) Generar dataset",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Generación\\generate_database.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Generación",
+      "justMyCode": true
+    },
+    {
+      "name": "[MoO3-V2O5] 2) Entrenar CD_norm",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Train\\train.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Train",
+      "justMyCode": true
+    },
+    {
+      "name": "[MoO3-V2O5] 2b) Entrenar R_total",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Train\\train_r_total.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Train",
+      "justMyCode": true
+    },
+    {
+      "name": "[MoO3-V2O5] 3) Inferencia NN vs TMM",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Evaluación\\TMM_NN.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[MoO3-V2O5] 3b) R_total — Inferencia NN vs TMM",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Evaluación R_total\\TMM_NN.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[MoO3-V2O5] 4) Evaluar modelo CD_norm",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Evaluación\\evaluar_modelo.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[MoO3-V2O5] 4b) Evaluar modelo R_total",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Evaluación R_total\\evaluar_modelo.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[MoO3-V2O5] 6) Pintar CD del modelo",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Evaluación\\plot_cd.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[MoO3-V2O5] 6b) Pintar R_total del modelo",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Evaluación R_total\\plot_r_total.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MoO3, V2O5\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[MoO3-V2O5] 7) DE optimizer (NN surrogate)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Optimization\\CD\\MoO3_V2O5\\DE\\de_optimizer.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Optimization\\CD\\MoO3_V2O5\\DE",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5] 1) Generar dataset",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Generación\\generate_database.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Generación",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5] 2) Entrenar CD_norm",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Train\\train.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Train",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5] 2b) Entrenar R_total",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Train\\train_r_total.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Train",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5] 3) Inferencia NN vs TMM",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Evaluación\\TMM_NN.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5] 3b) R_total — Inferencia NN vs TMM",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Evaluación R_total\\TMM_NN.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5] 4) Evaluar modelo CD_norm",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Evaluación\\evaluar_modelo.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5] 4b) Evaluar modelo R_total",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Evaluación R_total\\evaluar_modelo.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5] 6) Pintar CD del modelo",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Evaluación\\plot_cd.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5] 6b) Pintar R_total del modelo",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Evaluación R_total\\plot_r_total.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, V2O5\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5] 7) DE optimizer (NN surrogate)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Optimization\\CD\\V2O5_V2O5\\DE\\de_optimizer.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Optimization\\CD\\V2O5_V2O5\\DE",
+      "justMyCode": true
+    },
+    {
       "name": "Archivo actual (cualquier proyecto)",
       "type": "debugpy",
       "request": "launch",
