@@ -7,3 +7,7 @@ __pycache__/
 
 # Salidas generadas
 ParaAlejandro/NN_Code/
+
+# Configuración local (no se comparte)
+.env
+.vscode/

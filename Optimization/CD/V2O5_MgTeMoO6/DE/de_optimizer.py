@@ -22,7 +22,7 @@ from tensorflow.keras import models as tf_models
 # ---------------------------------------------------------------------------
 TARGET_WAVELENGTH_UM = None
 WINDOW_CM            = 50.0
-NUM_SEEDS            = 5
+NUM_SEEDS            = 1
 C1                   = 1.0
 C2                   = 0.1
 MAXITER              = 200
