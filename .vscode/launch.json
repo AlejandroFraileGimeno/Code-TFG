@@ -605,6 +605,276 @@
       "justMyCode": true
     },
     {
+      "name": "[MgTeMoO6-MoO3] 1) Generar dataset",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Generación\\generate_database.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Generación",
+      "justMyCode": true
+    },
+    {
+      "name": "[MgTeMoO6-MoO3] 2) Train CD_norm",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Train\\train.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Train",
+      "justMyCode": true
+    },
+    {
+      "name": "[MgTeMoO6-MoO3] 3) Train R_total",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Train\\train_r_total.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Train",
+      "justMyCode": true
+    },
+    {
+      "name": "[MgTeMoO6-MoO3] 4) Evaluar CD_norm",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Evaluación\\evaluar_modelo.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[MgTeMoO6-MoO3] 5) TMM vs NN CD",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Evaluación\\TMM_NN.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[MgTeMoO6-MoO3] 5b) Plot CD manual",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Evaluación\\plot_cd.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[MgTeMoO6-MoO3] 6) Evaluar R_total",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Evaluación R_total\\evaluar_modelo.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[MgTeMoO6-MoO3] 6a) TMM vs NN R_total",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Evaluación R_total\\TMM_NN.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[MgTeMoO6-MoO3] 6b) Plot R_total manual",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Evaluación R_total\\plot_r_total.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\MgTeMoO6, MoO3\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MgTeMoO6] 1) Generar dataset",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Generación\\generate_database.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Generación",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MgTeMoO6] 2) Train CD_norm",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Train\\train.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Train",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MgTeMoO6] 3) Train R_total",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Train\\train_r_total.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Train",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MgTeMoO6] 4) Evaluar CD_norm",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Evaluación\\evaluar_modelo.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MgTeMoO6] 5) TMM vs NN CD",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Evaluación\\TMM_NN.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MgTeMoO6] 5b) Plot CD manual",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Evaluación\\plot_cd.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MgTeMoO6] 6) Evaluar R_total",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Evaluación R_total\\evaluar_modelo.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MgTeMoO6] 6a) TMM vs NN R_total",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Evaluación R_total\\TMM_NN.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MgTeMoO6] 6b) Plot R_total manual",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Evaluación R_total\\plot_r_total.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MgTeMoO6\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MgTeMoO6] 7) DE optimizer (NN surrogate)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Optimization\\CD\\V2O5_MgTeMoO6\\DE\\de_optimizer.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Optimization\\CD\\V2O5_MgTeMoO6\\DE",
+      "justMyCode": true
+    },
+    {
+      "name": "[MgTeMoO6-MoO3] 7) DE optimizer (NN surrogate)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Optimization\\CD\\MgTeMoO6_MoO3\\DE\\de_optimizer.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Optimization\\CD\\MgTeMoO6_MoO3\\DE",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MoO3] 1) Generar dataset",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Generación\\generate_database.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Generación",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MoO3] 2) Train CD_norm",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Train\\train.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Train",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MoO3] 3) Train R_total",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Train\\train_r_total.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Train",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MoO3] 4) Evaluar CD_norm",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Evaluación\\evaluar_modelo.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MoO3] 5) TMM vs NN CD",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Evaluación\\TMM_NN.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MoO3] 5b) Plot CD manual",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Evaluación\\plot_cd.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Evaluación",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MoO3] 6) Evaluar R_total",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Evaluación R_total\\evaluar_modelo.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MoO3] 6a) TMM vs NN R_total",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Evaluación R_total\\TMM_NN.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MoO3] 6b) Plot R_total manual",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Evaluación R_total\\plot_r_total.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Surrogates\\CD\\V2O5, MoO3\\Evaluación R_total",
+      "justMyCode": true
+    },
+    {
+      "name": "[V2O5-MoO3] 7) DE optimizer (NN surrogate)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\Optimization\\CD\\V2O5_MoO3\\DE\\de_optimizer.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\Optimization\\CD\\V2O5_MoO3\\DE",
+      "justMyCode": true
+    },
+    {
       "name": "Archivo actual (cualquier proyecto)",
       "type": "debugpy",
       "request": "launch",
