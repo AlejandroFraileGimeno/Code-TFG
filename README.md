@@ -1,63 +1,116 @@
-# Código Lucía — Red neuronal de dicroísmo circular (CD)
+# Code TFG — Optimización de bicapas ópticas mediante redes neuronales
 
-Red neuronal (TensorFlow/Keras 3) que predice espectros de dicroísmo circular en
-bicapas de MoO₃, apoyada en el paquete `generalized_transfer_matrix_method` (GTMM).
+Código del Trabajo de Fin de Grado. El objetivo es encontrar la geometría óptima (ángulo y espesores) de bicapas de materiales anisotrópicos que maximice el dicroísmo circular (CD) usando redes neuronales como modelos sustitutos (*surrogates*) del cálculo físico exacto (TMM).
 
-## Estructura
+## Materiales estudiados
+
+Se trabaja con bicapas formadas por combinaciones de tres materiales birrefringentes:
+
+- **MoO₃** — trióxido de molibdeno
+- **V₂O₅** — pentóxido de vanadio
+- **MgTeMoO₆** — teluro de molibdato de magnesio
+
+Hay **9 combinaciones** de bicapas (capa1 / capa2), con estructura: `Air / capa1(d₁, θ) / capa2(d₂) / Au`.
+
+## Estructura del repositorio
 
 ```
-Código Lucía/
-├── .venv/                      # Entorno virtual (NO tocar, no se sincroniza)
-├── .vscode/                    # Configuración de VS Code (intérprete, lanzadores)
-├── .env                        # Variables de entorno (silencian logs de TensorFlow)
-└── ParaAlejandro/
-    ├── generalized_transfer_matrix_method/   # Paquete GTMM (autocontenido)
-    ├── src/data_generation.py  # Generador de datos (reconstruido)
-    ├── forward_model.py        # Definición del modelo Keras
-    ├── training_forward.py     # Lógica de entrenamiento
-    ├── utils_nn_forward.py     # Utilidades (datos, normalización, predicción)
-    ├── SEED_LIST.csv           # Semillas aleatorias
-    ├── requirements.txt        # Dependencias
-    │
-    ├── generate_dataset_parallel.py  # [1] Generar dataset (rápido, ~30 min)
-    ├── generate_database.py          #     Generar dataset (serie, original, ~3 h)
-    ├── train.py                      # [2] Entrenar el modelo
-    ├── TMM_NN.py                      # [3] Inferencia: comparar NN vs TMM (PNGs)
-    ├── evaluar_modelo.py             # [4] Métricas de calidad (MAE/RMSE/corr)
-    └── plot_history.py               # [5] Graficar la curva de entrenamiento
+Code TFG/
+│
+├── TMM/                          # Paquete de cálculo físico (Transfer Matrix Method)
+│   └── generalized_transfer_matrix_method/
+│       ├── tmm.py                # Cálculo de transmisión/reflexión
+│       ├── permittivities.py     # Permitividades de cada material
+│       └── Permittivities/       # Datos ópticos tabulados
+│
+├── Datasets/
+│   └── CD/
+│       └── MoO3_V2O5/            # (ejemplo — hay 9 combinaciones)
+│           ├── CD_spectra_norm.csv   # Espectros de CD normalizado
+│           ├── R_total_spectra.csv   # Espectros de reflectancia total
+│           ├── angles.csv            # Ángulos de rotación (θ)
+│           └── thickness.csv         # Espesores (d₁, d₂) en nm
+│
+├── Surrogates/
+│   └── CD/
+│       └── MoO3, V2O5/           # (ejemplo — hay 9 combinaciones)
+│           ├── Generación/       # Scripts para generar el dataset con TMM
+│           ├── Train/            # Entrenamiento de las redes neuronales
+│           │   ├── train.py          # Entrena modelo de CD_norm
+│           │   └── train_r_total.py  # Entrena modelo de R_total
+│           ├── Evaluación/       # Comparación NN vs TMM para CD_norm
+│           └── Evaluación R_total/   # Comparación NN vs TMM para R_total
+│
+├── Models/
+│   ├── CD/
+│   │   └── MoO3_V2O5/            # (ejemplo — hay 9 combinaciones)
+│   │       ├── Model_1seed/      # Modelo entrenado (seed 1 de 5)
+│   │       │   ├── Model_1seed.h5    # Pesos de la red neuronal (Keras 3)
+│   │       │   ├── scalers.json      # Normalizadores de entrada/salida
+│   │       │   └── hyperparameters.txt
+│   │       └── ...               # Model_2seed ... Model_5seed
+│   └── R_total/
+│       └── MoO3_V2O5/            # Ídem para el modelo de R_total
+│
+├── Optimization/
+│   └── CD/
+│       └── MoO3_V2O5/            # (ejemplo — hay 9 combinaciones)
+│           └── DE/
+│               ├── de_optimizer.py   # Optimización por Evolución Diferencial
+│               └── results/          # PNGs con el espectro óptimo encontrado
+│
+├── Seed/
+│   └── SEED_LIST.csv             # Semillas aleatorias para reproducibilidad
+│
+└── Transmision_Tss/              # Experimentos previos con transmisión (referencia)
 ```
-
-## Cómo ejecutar (en VS Code)
-
-1. Abre la carpeta **Código Lucía** en VS Code.
-2. Comprueba que abajo a la derecha aparece el intérprete `.venv`. Si no:
-   `Ctrl+Shift+P` → *Python: Select Interpreter* → *Enter interpreter path* →
-   pega: `.venv\Scripts\python.exe` (o selecciónalo de la lista).
-3. Pulsa **F5** y elige una de las configuraciones (1 a 5). Cada una ya corre
-   con el `.venv` y desde la carpeta correcta.
 
 ## Flujo de trabajo
 
-| Paso | Script | Qué hace |
-|------|--------|----------|
-| 1 | `generate_dataset_parallel.py` | Genera el dataset en `NN_Code/Dataset_MoO3_Bilayer` (10000 estructuras, paralelo) |
-| 2 | `train.py` | Entrena y guarda el modelo en `NN_Code/Forward_Models_Trained_bilayers_MoO3/Model_1seed/` |
-| 3 | `TMM_NN.py` | Compara espectros NN vs TMM y guarda PNGs en `.../results/` |
-| 4 | `evaluar_modelo.py` | Imprime MAE, RMSE y correlación frente al cálculo físico |
-| 5 | `plot_history.py` | Dibuja la curva de pérdida (train vs val) |
+Para cada combinación de materiales, el proceso sigue estos pasos:
 
-> El dataset ya está generado y el modelo ya está entrenado. Solo necesitas
-> volver al paso 1/2 si quieres rehacerlos.
+```
+1. Generar dataset  →  2. Entrenar NN  →  3. Evaluar NN  →  4. Optimizar con DE
+```
 
-## Notas técnicas
+| Paso | Carpeta | Script | Qué hace |
+|------|---------|--------|----------|
+| 1 | `Surrogates/CD/<par>/Generación/` | `generate_database.py` | Calcula 10 000 estructuras con TMM y guarda los espectros en `Datasets/` |
+| 2a | `Surrogates/CD/<par>/Train/` | `train.py` | Entrena red neuronal para predecir CD_norm |
+| 2b | `Surrogates/CD/<par>/Train/` | `train_r_total.py` | Entrena red neuronal para predecir R_total |
+| 3a | `Surrogates/CD/<par>/Evaluación/` | `TMM_NN.py` / `evaluar_modelo.py` | Compara predicciones NN vs TMM (CD_norm) |
+| 3b | `Surrogates/CD/<par>/Evaluación R_total/` | `TMM_NN.py` / `evaluar_modelo.py` | Compara predicciones NN vs TMM (R_total) |
+| 4 | `Optimization/CD/<par>/DE/` | `de_optimizer.py` | Busca (θ, d₁, d₂) óptimos usando Evolución Diferencial con las NNs |
 
-- **Python 3.12 + TensorFlow 2.21 (Keras 3).** El modelo se entrena, guarda
-  (`.h5`) y carga con Keras 3. No se usa `tf-keras` ni `TF_USE_LEGACY_KERAS`.
-- **GPU:** TensorFlow en Windows nativo funciona solo en **CPU**. El
-  entrenamiento completo (8M muestras) tarda; para pruebas rápidas baja
-  `ntrain`/`nvalidation` en `train.py`.
-- **Rutas con tildes:** la carpeta se llama "Código"; Keras 3 maneja bien la
-  tilde al cargar el `.h5` (Keras 2 no, por eso no se usa).
-- El paquete GTMM y el módulo `src/data_generation.py` no venían en el zip
-  original: el primero se copió desde otra carpeta y el segundo se reconstruyó
-  a partir del resto del código.
+## Función de mérito (FoM)
+
+El optimizador maximiza:
+
+```
+FoM = C1 × CD_norm_peak + C2 × R_total_at_peak
+```
+
+donde `C1 >> C2` (por defecto `C1=1.0`, `C2=0.1`), priorizando el pico de CD sobre la reflectancia total.
+
+## Configuración del entorno
+
+**Requisitos:** Python 3.12 + TensorFlow 2.x (Keras 3)
+
+```bash
+# Crear entorno virtual
+python -m venv .venv
+
+# Activar (Windows)
+.venv\Scripts\activate
+
+# Instalar dependencias
+pip install tensorflow numpy scipy matplotlib
+```
+
+> En Windows, TensorFlow solo ejecuta en **CPU**. El entrenamiento completo puede tardar; para pruebas rápidas reduce `n_data` en `generate_database.py` o `NUM_SEEDS` en `de_optimizer.py`.
+
+## Modelos entrenados
+
+Cada combinación tiene **5 modelos** (seeds 1–5) para estimar la variabilidad. Durante la optimización se usa un ensemble promediando las predicciones de los N seeds configurados (`NUM_SEEDS` en `de_optimizer.py`).
+
+Los modelos ya están entrenados y guardados en `Models/`. Solo hay que volver al paso 1–2 si se quieren regenerar.
