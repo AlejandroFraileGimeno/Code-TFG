@@ -54,7 +54,7 @@ def random_structure():
 
 def check_impossible(R, T):
     msgs = []
-    for j, name in enumerate(["xx", "yy", "yx", "xy"]):
+    for j, name in enumerate(["xx", "yy", "xy", "yx"]):
         if np.any(R[:, j] > 1 + TOL):
             msgs.append(f"R{name} > 1  (max={R[:, j].max():.6f})")
         if np.any(T[:, j] > 1 + TOL):
@@ -67,8 +67,8 @@ def plot_caso(omega, R, T, mat1, mat2, sust, d1, d2, phi1, phi2, alpha, count, m
 
     axs[0].plot(omega, R[:, 0], label='Rxx')
     axs[0].plot(omega, R[:, 1], label='Ryy')
-    axs[0].plot(omega, R[:, 2], label='Ryx', linestyle='--')
-    axs[0].plot(omega, R[:, 3], label='Rxy', linestyle='--')
+    axs[0].plot(omega, R[:, 2], label='Rxy', linestyle='--')
+    axs[0].plot(omega, R[:, 3], label='Ryx', linestyle='--')
     axs[0].axhline(1, color='k', lw=0.8, linestyle=':')
     axs[0].set_ylabel('Reflexion', fontsize=13)
     axs[0].legend()
@@ -76,8 +76,8 @@ def plot_caso(omega, R, T, mat1, mat2, sust, d1, d2, phi1, phi2, alpha, count, m
 
     axs[1].plot(omega, T[:, 0], label='Txx')
     axs[1].plot(omega, T[:, 1], label='Tyy')
-    axs[1].plot(omega, T[:, 2], label='Tyx', linestyle='--')
-    axs[1].plot(omega, T[:, 3], label='Txy', linestyle='--')
+    axs[1].plot(omega, T[:, 2], label='Txy', linestyle='--')
+    axs[1].plot(omega, T[:, 3], label='Tyx', linestyle='--')
     axs[1].axhline(1, color='k', lw=0.8, linestyle=':')
     axs[1].set_ylabel('Transmision', fontsize=13)
     axs[1].set_xlabel('Frecuencia (cm$^{-1}$)', fontsize=13)

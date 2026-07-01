@@ -36,12 +36,13 @@ substrate   = BaF2()
 
 # Mesh de frecuencias
 N      = 1000
-omegas = [600, 1100]   # cm^-1
+omegas = [400, 1300]   # cm^-1
 omega  = np.linspace(omegas[0], omegas[1], N)
 
 # Capas intermedias (d en metros, phi en radianes)
 layers = [
-    MoO3(d=1000e-9, phi=0.0),
+    V2O5(d=100e-9, phi=90*np.pi/180),  
+    MoO3(d=1000e-9, phi=0*np.pi/180),
 ]
 
 structure = LayeredStructure(
@@ -69,8 +70,8 @@ fig, ax = plt.subplots(figsize=(10, 5))
 
 ax.plot(omega, T[:, 0], label='Txx')
 ax.plot(omega, T[:, 1], label='Tyy')
-ax.plot(omega, T[:, 2], label='Tyx', linestyle='--')
-ax.plot(omega, T[:, 3], label='Txy', linestyle='--')
+ax.plot(omega, T[:, 2], label='Txy', linestyle='--')
+ax.plot(omega, T[:, 3], label='Tyx', linestyle='--')
 ax.set_ylabel('Transmision', fontsize=13)
 ax.set_xlabel('Frecuencia (cm$^{-1}$)', fontsize=13)
 ax.set_ylim(0, 1)

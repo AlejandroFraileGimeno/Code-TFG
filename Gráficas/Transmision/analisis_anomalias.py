@@ -66,7 +66,7 @@ def evaluar(mat1, mat2, phi1, phi2, d1, d2):
 
 def componentes_violadas(R, T):
     msgs = []
-    for j, name in enumerate(["xx", "yy", "yx", "xy"]):
+    for j, name in enumerate(["xx", "yy", "xy", "yx"]):
         if np.any(R[:, j] > 1 + TOL):
             msgs.append(f"R{name}")
         if np.any(T[:, j] > 1 + TOL):

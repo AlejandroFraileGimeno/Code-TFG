@@ -8,6 +8,10 @@ __pycache__/
 # Salidas generadas
 ParaAlejandro/NN_Code/
 
+# Datasets y modelos entrenados (demasiado grandes para GitHub)
+Datasets/
+Models/
+
 # Configuración local (no se comparte)
 .env
 .vscode/

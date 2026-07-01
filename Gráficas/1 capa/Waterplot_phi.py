@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Mapa de transmitancia vs espesor y número de onda
-Estructura: Air / material(d, phi=0) / sustrato
+Mapa de transmitancia vs ángulo phi y número de onda
+Estructura: Air / material(d, phi) / sustrato
 """
 
 import sys
@@ -24,12 +24,13 @@ from generalized_transfer_matrix_method import (
 # ---------------------------------------------------------------------------
 # CONFIG — modifica aquí
 # ---------------------------------------------------------------------------
-MATERIAL    = MoO3        # Material de la capa: MoO3, V2O5, MgTeMoO6
+MATERIAL    = MoO3        # Material de la capa: MoO3, V2O5, MgTeMoO6, hBN
 SUBSTRATE   = BaF2        # Sustrato: Au, SiO2, BaF2, Air
+THICKNESS   = 100e-9      # Espesor fijo (metros)
 ALPHA       = 0.0         # Ángulo de incidencia (radianes). 0 = normal
-D_MIN       = 50          # Espesor mínimo (nm)
-D_MAX       = 1000        # Espesor máximo (nm)
-N_THICKNESS = 1000         # Número de puntos de espesor
+PHI_MIN     = 0           # Ángulo phi mínimo (grados)
+PHI_MAX     = 90          # Ángulo phi máximo (grados)
+N_PHI       = 200         # Número de puntos de phi
 FREQ_MIN    = 450         # Frecuencia mínima (cm⁻¹)
 FREQ_MAX    = 1100        # Frecuencia máxima (cm⁻¹)
 N_FREQS     = 500         # Número de puntos de frecuencia
@@ -45,46 +46,46 @@ assert T_COMPONENT in _T_INDEX, f"T_COMPONENT debe ser uno de {list(_T_INDEX)}"
 
 _label = _T_LABEL[T_COMPONENT]
 
-thicknesses = np.linspace(D_MIN, D_MAX, N_THICKNESS)
-freqs       = np.linspace(FREQ_MIN, FREQ_MAX, N_FREQS)
-T_map       = np.zeros((N_THICKNESS, N_FREQS))
+phis  = np.linspace(PHI_MIN, PHI_MAX, N_PHI)          # grados
+freqs = np.linspace(FREQ_MIN, FREQ_MAX, N_FREQS)
+T_map = np.zeros((N_PHI, N_FREQS))
 
-print(f"Calculando heatmap: {N_THICKNESS} espesores × {N_FREQS} frecuencias...")
-for i, d in enumerate(thicknesses):
-    if i % max(1, N_THICKNESS // 10) == 0:
-        print(f"  {100 * i / N_THICKNESS:.0f}%")
+print(f"Calculando mapa: {N_PHI} ángulos × {N_FREQS} frecuencias...")
+for i, phi_deg in enumerate(phis):
+    if i % max(1, N_PHI // 10) == 0:
+        print(f"  {100 * i / N_PHI:.0f}%")
     structure = LayeredStructure(
         superstrate=Air(),
         substrate=SUBSTRATE(),
-        layers=[MATERIAL(d=d * 1e-9, phi=0.0*np.pi/180.0)],  # phi=0 para este heatmap
+        layers=[MATERIAL(d=THICKNESS, phi=phi_deg * np.pi / 180.0)],
     )
     for j, f in enumerate(freqs):
         T_map[i, j] = calculate_transmission(f, ALPHA, structure, basis="linear")[_T_INDEX[T_COMPONENT]]
 
 print("  100% — listo")
 
-FREQ_GRID, THICK_GRID = np.meshgrid(freqs, thicknesses)
+FREQ_GRID, PHI_GRID = np.meshgrid(freqs, phis)
 
 if PLOT_TYPE == "3d":
     fig = plt.figure(figsize=(12, 7))
     ax = fig.add_subplot(111, projection="3d")
     surf = ax.plot_surface(
-        FREQ_GRID, THICK_GRID, T_map,
+        FREQ_GRID, PHI_GRID, T_map,
         cmap="viridis", linewidth=0, antialiased=True, alpha=0.95,
     )
     cbar = fig.colorbar(surf, ax=ax, shrink=0.5, pad=0.1)
     cbar.set_label(f"$T_{{{_label}}}$", fontsize=16)
     ax.set_xlabel(r"$\omega$ (cm$^{-1}$)", fontsize=12, labelpad=10)
-    ax.set_ylabel("Espesor (nm)", fontsize=12, labelpad=10)
+    ax.set_ylabel(r"$\phi$ (°)", fontsize=12, labelpad=10)
     ax.set_zlabel(f"$T_{{{_label}}}$", fontsize=14, labelpad=8)
     ax.view_init(elev=ELEVATION, azim=AZIMUTH)
 else:
     fig, ax = plt.subplots(figsize=(10, 6))
-    im = ax.pcolormesh(freqs, thicknesses, T_map, cmap="viridis", shading="auto")
+    im = ax.pcolormesh(freqs, phis, T_map, cmap="viridis", shading="auto")
     cbar = fig.colorbar(im, ax=ax)
     cbar.set_label(f"$T_{{{_label}}}$", fontsize=18)
     ax.set_xlabel(r"$\omega$ (cm$^{-1}$)", fontsize=14)
-    ax.set_ylabel("Espesor (nm)", fontsize=14)
+    ax.set_ylabel(r"$\phi$ (°)", fontsize=14)
 
 fig.tight_layout()
 plt.show()
