@@ -3,7 +3,6 @@
 Comparativa visual: espectro objetivo vs TMM con parametros de la inversa
 =========================================================================
 Muestra N_PLOT casos del test: objetivo (negro) vs TMM reconstruido (rojo).
-Guarda en Evaluacion/resultados_tandem/
 """
 
 import sys
@@ -19,7 +18,7 @@ ROOT_PATH = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT_PATH / "TMM"))
 
 from generalized_transfer_matrix_method import (
-    Air, BaF2, MoO3, V2O5, LayeredStructure, calculate_transmission,
+    Air, BaF2, MgTeMoO6, LayeredStructure, calculate_transmission,
 )
 
 NUM_SEEDS = 1
@@ -27,8 +26,8 @@ N_PLOT    = 8
 SEED_PLOT = 55
 N_TRAIN   = 20_000
 
-INVERSE_DIR = ROOT_PATH / "Models"   / "T_xx" / "V2O5_MoO3_BaF2" / f"Inverse_N{N_TRAIN}"
-DATASET_DIR = ROOT_PATH / "Datasets" / "T_xx" / "V2O5_MoO3_BaF2"
+INVERSE_DIR = ROOT_PATH / "Models"   / "T_xx" / "MgTeMoO6_MgTeMoO6_BaF2" / f"Inverse_N{N_TRAIN}"
+DATASET_DIR = ROOT_PATH / "Datasets" / "T_xx" / "MgTeMoO6_MgTeMoO6_BaF2"
 OUT_DIR     = Path(__file__).parent / "resultados_tandem"
 OUT_DIR.mkdir(exist_ok=True)
 
@@ -58,8 +57,8 @@ def denorm(p): return p * (param_max - param_min) + param_min
 def tmm_spectrum(th1, th2, d1, d2):
     s = LayeredStructure(
         superstrate=Air(), substrate=BaF2(),
-        layers=[V2O5(d=d1*1e-9, phi=np.deg2rad(th1)),
-                MoO3(d=d2*1e-9, phi=np.deg2rad(th2))],
+        layers=[MgTeMoO6(d=d1*1e-9, phi=np.deg2rad(th1)),
+                MgTeMoO6(d=d2*1e-9, phi=np.deg2rad(th2))],
     )
     return np.array([float(calculate_transmission(f, 0, s, basis="linear")[0]) for f in FREQS])
 
@@ -94,7 +93,7 @@ for i, idx in enumerate(chosen):
 for j in range(i + 1, nrows * ncols):
     axes[j].set_visible(False)
 
-fig.suptitle("Evaluacion tandem — Objetivo vs TMM(params inversa)  [V2O5/MoO3/BaF2]",
+fig.suptitle("Evaluacion tandem — Objetivo vs TMM(params inversa)  [MgTeMoO6/MgTeMoO6/BaF2]",
              fontsize=12)
 fig.tight_layout()
 out = OUT_DIR / "comparativa_tandem.png"

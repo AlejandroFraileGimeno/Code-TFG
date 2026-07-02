@@ -25,13 +25,13 @@ from generalized_transfer_matrix_method import (
 # ---------------------------------------------------------------------------
 MATERIAL    = MoO3        # Material de la capa: MoO3, V2O5, MgTeMoO6, hBN
 SUBSTRATE   = BaF2        # Sustrato: Au, SiO2, BaF2, Air
-THICKNESS   = 1000e-9     # Espesor en metros (ej: 1000e-9 = 1000 nm)
+THICKNESS   = 200e-9     # Espesor en metros (ej: 1000e-9 = 1000 nm)
 PHI         = 0.0         # Orientación del cristal (radianes)
 ALPHA       = 0.0         # Ángulo de incidencia (radianes). 0 = normal
-FREQ_MIN    = 400         # Frecuencia mínima (cm⁻¹)
+FREQ_MIN    = 500         # Frecuencia mínima (cm⁻¹)
 FREQ_MAX    = 1100        # Frecuencia máxima (cm⁻¹)
 N_FREQS     = 1000        # Número de puntos de frecuencia
-T_COMPONENT = "ss"        # "pp", "ss", "ps", "sp"
+T_COMPONENT = "pp"        # "pp", "ss", "ps", "sp"
 # ---------------------------------------------------------------------------
 
 _T_INDEX = {"pp": 0, "ss": 1, "ps": 2, "sp": 3}

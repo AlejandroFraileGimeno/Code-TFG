@@ -34,8 +34,8 @@ from forward_model import build_forward
 # CONFIG
 # ============================================================
 FORWARD_SEED  = 1
-N_TRAIN       = 400_000
-N_VAL         = 50_000
+N_TRAIN       = 20_000
+N_VAL         = 20_000
 EPOCHS        = 500
 BATCH_SIZE    = 256
 LR            = 5e-4
@@ -45,7 +45,7 @@ NUM_SEEDS     = 1
 
 DATASET_DIR   = ROOT_PATH / "Datasets" / "T_xx" / "V2O5_MoO3_BaF2"
 FORWARD_DIR   = ROOT_PATH / "Models"   / "T_xx" / "V2O5_MoO3_BaF2" / "Forward"
-INVERSE_DIR   = ROOT_PATH / "Models"   / "T_xx" / "V2O5_MoO3_BaF2" / "Inverse"
+INVERSE_DIR   = ROOT_PATH / "Models"   / "T_xx" / "V2O5_MoO3_BaF2" / f"Inverse_N{N_TRAIN}"
 INVERSE_DIR.mkdir(parents=True, exist_ok=True)
 
 SEED_FILE = ROOT_PATH / "Seed" / "SEED_LIST.csv"

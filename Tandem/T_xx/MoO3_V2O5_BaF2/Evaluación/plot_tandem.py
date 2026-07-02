@@ -28,9 +28,10 @@ from generalized_transfer_matrix_method import (
 NUM_SEEDS = 1
 N_PLOT    = 8
 SEED_PLOT = 55
+N_TRAIN   = 20_000
 # ============================================================
 
-INVERSE_DIR = ROOT_PATH / "Models"   / "T_xx" / "MoO3_V2O5_BaF2" / "Inverse"
+INVERSE_DIR = ROOT_PATH / "Models"   / "T_xx" / "MoO3_V2O5_BaF2" / f"Inverse_N{N_TRAIN}"
 DATASET_DIR = ROOT_PATH / "Datasets" / "T_xx" / "MoO3_V2O5_BaF2"
 OUT_DIR     = Path(__file__).parent / "resultados_tandem"
 OUT_DIR.mkdir(exist_ok=True)
@@ -47,7 +48,7 @@ inv_models = [
 ]
 
 T_xx_all = np.loadtxt(DATASET_DIR / "T_xx_spectra.csv", delimiter=",").astype(np.float32)
-N_USED   = 450_000
+N_USED   = N_TRAIN * 2
 np.random.seed(SEED_PLOT)
 chosen   = np.random.choice(np.arange(N_USED, len(T_xx_all)), size=N_PLOT, replace=False)
 

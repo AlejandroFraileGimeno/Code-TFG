@@ -1,18 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Entrenamiento tandem — red inversa T_xx  MoO3/V2O5/BaF2
+Entrenamiento tandem — red inversa T_xx  MoO3/MoO3/BaF2
 =========================================================
 Arquitectura tandem:
 
-  T_xx_target → [Inverse NN] → params_norm → [Forward NN, FROZEN] → T_xx_pred
+  T_xx_target -> [Inverse NN] -> params_norm -> [Forward NN, FROZEN] -> T_xx_pred
 
-El loss se calcula entre T_xx_pred y T_xx_target en espacio espectral,
-evitando la no-unicidad del problema inverso.
-
-Al terminar guarda en Models/T_xx/MoO3_V2O5_BaF2/Inverse/:
-  inverse.keras
-  scalers.json  (copia de Forward/scalers.json — misma normalización)
-  history_loss.txt
+El loss se calcula en espacio espectral, evitando la no-unicidad del problema inverso.
 """
 
 import sys
@@ -28,12 +22,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "Forward"))
 
 from inverse_model import build_inverse
-from forward_model import build_forward   # solo para referencia de arquitectura
+from forward_model import build_forward
 
 # ============================================================
 # CONFIG
 # ============================================================
-FORWARD_SEED  = 1       # qué modelo forward usar como teacher (1, 2 o 3)
+FORWARD_SEED  = 1
 N_TRAIN       = 20_000
 N_VAL         = 20_000
 EPOCHS        = 500
@@ -43,23 +37,19 @@ PATIENCE      = 40
 NUM_SEEDS     = 1
 # ============================================================
 
-DATASET_DIR   = ROOT_PATH / "Datasets" / "T_xx" / "MoO3_V2O5_BaF2"
-FORWARD_DIR   = ROOT_PATH / "Models"   / "T_xx" / "MoO3_V2O5_BaF2" / "Forward"
-INVERSE_DIR   = ROOT_PATH / "Models"   / "T_xx" / "MoO3_V2O5_BaF2" / f"Inverse_N{N_TRAIN}"
+DATASET_DIR   = ROOT_PATH / "Datasets" / "T_xx" / "MoO3_MoO3_BaF2"
+FORWARD_DIR   = ROOT_PATH / "Models"   / "T_xx" / "MoO3_MoO3_BaF2" / "Forward"
+INVERSE_DIR   = ROOT_PATH / "Models"   / "T_xx" / "MoO3_MoO3_BaF2" / f"Inverse_N{N_TRAIN}"
 INVERSE_DIR.mkdir(parents=True, exist_ok=True)
 
 SEED_FILE = ROOT_PATH / "Seed" / "SEED_LIST.csv"
 seeds = np.loadtxt(SEED_FILE, dtype=int) if SEED_FILE.exists() else np.arange(100)
 
-# ---------------------------------------------------------------------------
-# Cargar scalers y dataset
-# ---------------------------------------------------------------------------
 scalers   = json.loads((FORWARD_DIR / "scalers.json").read_text())
 param_min = np.array(scalers["param_min"], dtype=np.float32)
 param_max = np.array(scalers["param_max"], dtype=np.float32)
 N_FREQS   = scalers["n_freqs"]
 
-# Copiar scalers al directorio de la inversa
 (INVERSE_DIR / "scalers.json").write_text(json.dumps(scalers, indent=2))
 
 print("Cargando dataset...")
@@ -71,23 +61,17 @@ print(f"  {N} muestras  |  N_FREQS={N_FREQS}")
 if N_TRAIN + N_VAL > N:
     raise ValueError(f"Dataset insuficiente: {N} < {N_TRAIN + N_VAL}")
 
-# Normalizar params → [0,1]  (target de la inversa durante evaluación directa)
 params_norm = (params - param_min) / (param_max - param_min)
 
-# Split
 idx    = np.random.permutation(N)
 idx_tr = idx[:N_TRAIN]
 idx_va = idx[N_TRAIN:N_TRAIN + N_VAL]
 
-# X = espectro objetivo,  Y_direct = params normalizados (solo para warm-up)
 X_tr, X_va = T_xx_spectra[idx_tr], T_xx_spectra[idx_va]
 Y_tr, Y_va = params_norm[idx_tr],  params_norm[idx_va]
 
 print(f"  Train: {X_tr.shape}  Val: {X_va.shape}\n")
 
-# ---------------------------------------------------------------------------
-# Cargar red forward CONGELADA
-# ---------------------------------------------------------------------------
 print(f"Cargando forward NN (seed {FORWARD_SEED}, frozen)...")
 forward_model = tf.keras.models.load_model(
     FORWARD_DIR / f"Model_{FORWARD_SEED}seed" / "forward.keras", compile=False
@@ -95,20 +79,14 @@ forward_model = tf.keras.models.load_model(
 forward_model.trainable = False
 print("Forward NN cargada y congelada.\n")
 
-# ---------------------------------------------------------------------------
-# Construcción del grafo tandem
-# ---------------------------------------------------------------------------
 def build_tandem(inverse_model, forward_model):
-    inp     = tf.keras.Input(shape=(N_FREQS,), name="T_xx_target")
-    params  = inverse_model(inp)       # (batch, 4) en [0,1]
-    T_pred  = forward_model(params)    # (batch, N_FREQS)
+    inp    = tf.keras.Input(shape=(N_FREQS,), name="T_xx_target")
+    params = inverse_model(inp)
+    T_pred = forward_model(params)
     return tf.keras.Model(inputs=inp, outputs=T_pred, name="tandem")
 
-# ---------------------------------------------------------------------------
-# Entrenamiento (ensemble)
-# ---------------------------------------------------------------------------
 for i in range(NUM_SEEDS):
-    seed = int(seeds[i + 10])   # semillas distintas a las del forward
+    seed = int(seeds[i + 10])
     tf.random.set_seed(seed)
     np.random.seed(seed)
     print(f"=== Inversa {i+1}/{NUM_SEEDS}  (seed={seed}) ===")
@@ -134,11 +112,9 @@ for i in range(NUM_SEEDS):
         ),
     ]
 
-    # Tandem puro — sin warm-up para evitar sesgo hacia soluciones promedio
-    print("  Entrenamiento tandem puro (sin warm-up)...")
     t0 = time.time()
     history = tandem.fit(
-        X_tr, X_tr,    # input = target (el tandem debe reconstruir el espectro)
+        X_tr, X_tr,
         validation_data=(X_va, X_va),
         epochs=EPOCHS,
         batch_size=BATCH_SIZE,

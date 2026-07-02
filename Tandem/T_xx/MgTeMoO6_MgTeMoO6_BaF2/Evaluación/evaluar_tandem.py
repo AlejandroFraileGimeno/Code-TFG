@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Evaluacion numerica de la red inversa (tandem) — T_xx  V2O5/MoO3/BaF2
+Evaluacion numerica de la red inversa (tandem) — T_xx  MgTeMoO6/MgTeMoO6/BaF2
 """
 
 import sys
@@ -14,7 +14,7 @@ ROOT_PATH = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT_PATH / "TMM"))
 
 from generalized_transfer_matrix_method import (
-    Air, BaF2, MoO3, V2O5, LayeredStructure, calculate_transmission,
+    Air, BaF2, MgTeMoO6, LayeredStructure, calculate_transmission,
 )
 
 NUM_SEEDS  = 1
@@ -22,8 +22,8 @@ N_EVAL     = 200
 SEED_EVAL  = 123
 N_TRAIN    = 20_000
 
-INVERSE_DIR = ROOT_PATH / "Models"   / "T_xx" / "V2O5_MoO3_BaF2" / f"Inverse_N{N_TRAIN}"
-DATASET_DIR = ROOT_PATH / "Datasets" / "T_xx" / "V2O5_MoO3_BaF2"
+INVERSE_DIR = ROOT_PATH / "Models"   / "T_xx" / "MgTeMoO6_MgTeMoO6_BaF2" / f"Inverse_N{N_TRAIN}"
+DATASET_DIR = ROOT_PATH / "Datasets" / "T_xx" / "MgTeMoO6_MgTeMoO6_BaF2"
 
 scalers   = json.loads((INVERSE_DIR / "scalers.json").read_text())
 param_min = np.array(scalers["param_min"], dtype=np.float32)
@@ -42,7 +42,7 @@ print("Cargando dataset...")
 params_all   = np.loadtxt(DATASET_DIR / "params.csv",       delimiter=",", skiprows=1).astype(np.float32)
 T_xx_all     = np.loadtxt(DATASET_DIR / "T_xx_spectra.csv", delimiter=",").astype(np.float32)
 N_TOTAL      = len(params_all)
-N_USED       = 20_000 + 20_000
+N_USED       = N_TRAIN * 2
 test_idx     = np.arange(N_USED, N_TOTAL)
 np.random.seed(SEED_EVAL)
 chosen       = np.random.choice(test_idx, size=min(N_EVAL, len(test_idx)), replace=False)
@@ -50,7 +50,7 @@ T_targets    = T_xx_all[chosen]
 print(f"  {len(chosen)} espectros de test (indices {chosen.min()}-{chosen.max()})\n")
 
 def inverse_ensemble(spectrum):
-    inp  = spectrum.reshape(1, -1).astype(np.float32)
+    inp   = spectrum.reshape(1, -1).astype(np.float32)
     preds = [m.predict(inp, verbose=0)[0] for m in inv_models]
     return np.mean(preds, axis=0)
 
@@ -61,8 +61,8 @@ def tmm_spectrum(theta1, theta2, d1, d2):
     structure = LayeredStructure(
         superstrate=Air(), substrate=BaF2(),
         layers=[
-            V2O5(d=d1 * 1e-9, phi=np.deg2rad(theta1)),
-            MoO3(d=d2 * 1e-9, phi=np.deg2rad(theta2)),
+            MgTeMoO6(d=d1 * 1e-9, phi=np.deg2rad(theta1)),
+            MgTeMoO6(d=d2 * 1e-9, phi=np.deg2rad(theta2)),
         ],
     )
     return np.array([float(calculate_transmission(f, 0, structure, basis="linear")[0])
@@ -71,17 +71,17 @@ def tmm_spectrum(theta1, theta2, d1, d2):
 mae_list, rmse_list, r2_list = [], [], []
 
 for k, idx in enumerate(chosen):
-    target   = T_targets[k]
-    p_norm   = inverse_ensemble(target)
-    th1, th2, d1, d2 = denorm(p_norm)
+    target            = T_targets[k]
+    p_norm            = inverse_ensemble(target)
+    th1, th2, d1, d2  = denorm(p_norm)
 
-    T_tmm    = tmm_spectrum(th1, th2, d1, d2)
+    T_tmm  = tmm_spectrum(th1, th2, d1, d2)
 
-    ss_res   = np.sum((target - T_tmm) ** 2)
-    ss_tot   = np.sum((target - target.mean()) ** 2)
-    r2       = float(1 - ss_res / ss_tot) if ss_tot > 1e-10 else None
-    mae      = float(np.mean(np.abs(target - T_tmm)))
-    rmse     = float(np.sqrt(np.mean((target - T_tmm) ** 2)))
+    ss_res = np.sum((target - T_tmm) ** 2)
+    ss_tot = np.sum((target - target.mean()) ** 2)
+    r2     = float(1 - ss_res / ss_tot) if ss_tot > 1e-10 else None
+    mae    = float(np.mean(np.abs(target - T_tmm)))
+    rmse   = float(np.sqrt(np.mean((target - T_tmm) ** 2)))
 
     mae_list.append(mae); rmse_list.append(rmse)
     if r2 is not None: r2_list.append(r2)
