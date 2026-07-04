@@ -13,6 +13,33 @@ from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
+
+# ---------------------------------------------------------------------------
+# Estilo TFG (solo estética; no afecta a los cálculos)
+# ---------------------------------------------------------------------------
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           12,
+    "axes.labelsize":      13,
+    "axes.titlesize":      12,
+    "xtick.labelsize":     11,
+    "ytick.labelsize":     11,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+    "xtick.top":           True,
+    "ytick.right":         True,
+    "xtick.minor.visible": True,
+    "ytick.minor.visible": True,
+    "legend.fontsize":     11,
+    "legend.framealpha":   0.9,
+    "legend.edgecolor":    "#c3c2b7",
+    "axes.grid":           True,
+    "grid.linewidth":      0.5,
+    "grid.alpha":          0.35,
+    "grid.linestyle":      "--",
+})
 import tensorflow as tf
 
 ROOT_PATH = Path(__file__).resolve().parents[4]
@@ -91,12 +118,12 @@ for i in range(N_PRED):
     rmse = float(np.sqrt(np.mean((T_tmm - T_nn) ** 2)))
 
     ax = axes[i]
-    ax.plot(FREQS, T_tmm, "r-",    lw=1.5, label="TMM")
-    ax.plot(FREQS, T_nn,  "b--",   lw=1.5, label="NN (media)")
+    ax.plot(FREQS, T_tmm, color="#0b0b0b", lw=2.0, label="TMM")
+    ax.plot(FREQS, T_nn,  color="#2a78d6", lw=1.6, ls="--", label="NN")
     ax.fill_between(FREQS, T_nn - T_nn_std, T_nn + T_nn_std,
-                    alpha=0.2, color="blue", label="NN ±σ")
-    ax.set_xlabel("Número de onda (cm⁻¹)", fontsize=10)
-    ax.set_ylabel("T_xx", fontsize=10)
+                    alpha=0.18, color="#2a78d6", label=r"NN $\pm\sigma$")
+    ax.set_xlabel(r"$\omega$ (cm$^{-1}$)", fontsize=10)
+    ax.set_ylabel(r"$T_{xx}$", fontsize=10)
     ax.set_ylim(0, 1)
     ax.set_title(
         f"θ₁={th1:.0f}°  θ₂={th2:.0f}°  d₁={d1:.0f}  d₂={d2:.0f} nm\n"
@@ -104,7 +131,7 @@ for i in range(N_PRED):
         fontsize=9,
     )
     ax.legend(fontsize=8)
-    ax.grid(True, alpha=0.3)
+    ax.grid(True)
     print(f"[{i+1}/{N_PRED}]  MAE={mae:.4f}  RMSE={rmse:.4f}")
 
 for j in range(i + 1, nrows * ncols):
@@ -114,6 +141,6 @@ fig.suptitle("Surrogate forward T_xx  —  TMM vs NN  [MoO3/V2O5/BaF2]", fontsiz
 fig.tight_layout()
 
 out = OUT_DIR / "comparativa_forward.png"
-fig.savefig(out, dpi=150)
+fig.savefig(out, dpi=200, bbox_inches="tight")
 print(f"\nGuardado: {out}")
 plt.show()

@@ -13,6 +13,33 @@ from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
+
+# ---------------------------------------------------------------------------
+# Estilo TFG (solo estética; no afecta a los cálculos)
+# ---------------------------------------------------------------------------
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           12,
+    "axes.labelsize":      13,
+    "axes.titlesize":      12,
+    "xtick.labelsize":     11,
+    "ytick.labelsize":     11,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+    "xtick.top":           True,
+    "ytick.right":         True,
+    "xtick.minor.visible": True,
+    "ytick.minor.visible": True,
+    "legend.fontsize":     11,
+    "legend.framealpha":   0.9,
+    "legend.edgecolor":    "#c3c2b7",
+    "axes.grid":           True,
+    "grid.linewidth":      0.5,
+    "grid.alpha":          0.35,
+    "grid.linestyle":      "--",
+})
 from scipy.optimize import differential_evolution
 from scipy.signal import find_peaks, peak_widths
 from tensorflow.keras import models as tf_models
@@ -223,18 +250,18 @@ results_dir.mkdir(exist_ok=True)
 
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(9, 10), sharex=True)
 
-ax1.scatter(lambda_mu, CD_tmm,      s=5, c="red",  label="CD TMM")
-ax1.scatter(lambda_mu, CD_nn,       s=5, c="blue", label="CD NN")
-ax2.scatter(lambda_mu, R_total_tmm, s=5, c="red",  label="R_total TMM")
-ax2.scatter(lambda_mu, R_total_nn,  s=5, c="blue", label="R_total NN")
+ax1.plot(lambda_mu, CD_tmm,      color="#0b0b0b", lw=2.0, label="CD TMM")
+ax1.plot(lambda_mu, CD_nn,       color="#2a78d6", lw=1.6, ls="--", label="CD NN")
+ax2.plot(lambda_mu, R_total_tmm, color="#0b0b0b", lw=2.0, label=r"$R_\mathrm{total}$ TMM")
+ax2.plot(lambda_mu, R_total_nn,  color="#2a78d6", lw=1.6, ls="--", label=r"$R_\mathrm{total}$ NN")
 
 for ax in (ax1, ax2):
     if TARGET_WAVELENGTH_UM is not None:
-        ax.axvline(TARGET_WAVELENGTH_UM, color="gray", ls="--", lw=1, label=f"target {TARGET_WAVELENGTH_UM} um")
+        ax.axvline(TARGET_WAVELENGTH_UM, color="#898781", ls="--", lw=1, label=f"target {TARGET_WAVELENGTH_UM} um")
     ax.legend()
 
-ax1.set_ylabel("CD reflection (normalizado)")
-ax2.set_ylabel("R_total = R_r + R_l")
+ax1.set_ylabel(r"$|\mathrm{CD}|$")
+ax2.set_ylabel(r"$R_\mathrm{total} = R_r + R_l$")
 ax2.set_xlabel("longitud de onda (um)")
 fig.suptitle(
     f"DE optimo V2O5/MoO3 -- th={theta_best:.1f} deg   d1={d1_best:.0f} nm (V2O5)   d2={d2_best:.0f} nm (MoO3)\n"
@@ -243,6 +270,6 @@ fig.suptitle(
 fig.tight_layout()
 
 save_path = results_dir / f"best_th{theta_best:.0f}_d1{d1_best:.0f}_d2{d2_best:.0f}.png"
-fig.savefig(save_path, dpi=150)
+fig.savefig(save_path, dpi=200, bbox_inches="tight")
 print(f"\nGrafica guardada en: {save_path.relative_to(ROOT_PATH)}")
 plt.show()

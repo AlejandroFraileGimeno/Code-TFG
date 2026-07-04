@@ -54,30 +54,40 @@ T = np.array([
 ])
 
 # ---------------------------------------------------------------------------
-# Estilo publicación
+# Estilo TFG
 # ---------------------------------------------------------------------------
 plt.rcParams.update({
-    "font.family":        "serif",
-    "mathtext.fontset":   "cm",
-    "axes.grid":          True,
-    "grid.alpha":         0.3,
-    "grid.linestyle":     "--",
-    "axes.linewidth":     0.8,
-    "xtick.direction":    "in",
-    "ytick.direction":    "in",
-    "xtick.top":          True,
-    "ytick.right":        True,
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           13,
+    "axes.labelsize":      14,
+    "xtick.labelsize":     12,
+    "ytick.labelsize":     12,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+    "xtick.top":           True,
+    "ytick.right":         True,
+    "xtick.minor.visible": True,
+    "ytick.minor.visible": True,
+    "legend.fontsize":     12,
+    "legend.framealpha":   0.9,
+    "legend.edgecolor":    "#c3c2b7",
+    "axes.grid":           True,
+    "grid.linewidth":      0.5,
+    "grid.alpha":          0.35,
+    "grid.linestyle":      "--",
 })
 
 fig, ax = plt.subplots(figsize=(7, 4.5))
 
-ax.plot(omega, T, color="black", linewidth=1.8, label=f"$T_{{{_label}}}$")
+ax.plot(omega, T, color="#0b0b0b", linewidth=1.8, label=f"$T_{{{_label}}}$")
 
-ax.set_xlabel(r"$\omega\ (\mathrm{cm}^{-1})$", fontsize=13)
-ax.set_ylabel("Transmitancia", fontsize=13)
+ax.set_xlabel(r"$\omega\ (\mathrm{cm}^{-1})$")
+ax.set_ylabel("Transmitancia")
 ax.set_xlim(FREQ_MIN, FREQ_MAX)
 ax.set_ylim(0, 1)
-ax.legend(fontsize=12, framealpha=0.9)
+ax.legend()
 
 fig.tight_layout()
 plt.show()

@@ -31,7 +31,7 @@ EPOCHS       = 300
 BATCH_SIZE   = 512
 LR           = 1e-3
 PATIENCE     = 25
-NUM_SEEDS    = 3
+NUM_SEEDS    = 1
 # ============================================================
 
 DATASET_DIR = ROOT_PATH / "Datasets" / "T_xx" / "MoO3_MoO3_BaF2"

@@ -34,7 +34,7 @@ N_PHI       = 200         # Número de puntos de phi
 FREQ_MIN    = 450         # Frecuencia mínima (cm⁻¹)
 FREQ_MAX    = 1100        # Frecuencia máxima (cm⁻¹)
 N_FREQS     = 500         # Número de puntos de frecuencia
-T_COMPONENT = "ss"        # Componente: "pp", "ss", "ps", "sp"
+T_COMPONENT = "pp"        # Componente: "pp", "ss", "ps", "sp"
 PLOT_TYPE   = "heatmap"   # "heatmap" o "3d"
 AZIMUTH     = -60         # Ángulo azimutal para la vista 3D (grados)
 ELEVATION   = 30          # Ángulo de elevación para la vista 3D (grados)
@@ -66,6 +66,21 @@ print("  100% — listo")
 
 FREQ_GRID, PHI_GRID = np.meshgrid(freqs, phis)
 
+# ---------------------------------------------------------------------------
+# Estilo TFG
+# ---------------------------------------------------------------------------
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           13,
+    "axes.labelsize":      14,
+    "xtick.labelsize":     12,
+    "ytick.labelsize":     12,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+})
+
 if PLOT_TYPE == "3d":
     fig = plt.figure(figsize=(12, 7))
     ax = fig.add_subplot(111, projection="3d")
@@ -74,18 +89,21 @@ if PLOT_TYPE == "3d":
         cmap="viridis", linewidth=0, antialiased=True, alpha=0.95,
     )
     cbar = fig.colorbar(surf, ax=ax, shrink=0.5, pad=0.1)
-    cbar.set_label(f"$T_{{{_label}}}$", fontsize=16)
-    ax.set_xlabel(r"$\omega$ (cm$^{-1}$)", fontsize=12, labelpad=10)
-    ax.set_ylabel(r"$\phi$ (°)", fontsize=12, labelpad=10)
-    ax.set_zlabel(f"$T_{{{_label}}}$", fontsize=14, labelpad=8)
+    cbar.set_label(f"$T_{{{_label}}}$", fontsize=14)
+    ax.set_xlabel(r"$\omega$ (cm$^{-1}$)", labelpad=10)
+    ax.set_ylabel(r"$\phi$ (°)", labelpad=10)
+    ax.set_zlabel(f"$T_{{{_label}}}$", labelpad=8)
     ax.view_init(elev=ELEVATION, azim=AZIMUTH)
 else:
-    fig, ax = plt.subplots(figsize=(10, 6))
-    im = ax.pcolormesh(freqs, phis, T_map, cmap="viridis", shading="auto")
-    cbar = fig.colorbar(im, ax=ax)
-    cbar.set_label(f"$T_{{{_label}}}$", fontsize=18)
-    ax.set_xlabel(r"$\omega$ (cm$^{-1}$)", fontsize=14)
-    ax.set_ylabel(r"$\phi$ (°)", fontsize=14)
+    fig, ax = plt.subplots(figsize=(9, 5.5))
+    im = ax.pcolormesh(freqs, phis, T_map, cmap="viridis", shading="auto",
+                       rasterized=True)
+    cbar = fig.colorbar(im, ax=ax, pad=0.02)
+    cbar.set_label(f"$T_{{{_label}}}$", fontsize=14)
+    cbar.outline.set_linewidth(0.9)
+    ax.set_xlabel(r"$\omega$ (cm$^{-1}$)")
+    ax.set_ylabel(r"$\phi$ (°)")
+    ax.set_yticks(np.arange(PHI_MIN, PHI_MAX + 1, 15))
 
 fig.tight_layout()
 plt.show()

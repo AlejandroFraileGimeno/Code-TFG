@@ -135,35 +135,54 @@ for comp, cnt in viols_c.most_common():
     print(f"  {comp}  {cnt}")
 
 # ---------------------------------------------------------------------------
-# Graficas
+# Graficas — estilo TFG
 # ---------------------------------------------------------------------------
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           12,
+    "axes.labelsize":      13,
+    "axes.titlesize":      12,
+    "xtick.labelsize":     11,
+    "ytick.labelsize":     11,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+    "grid.linewidth":      0.5,
+    "grid.alpha":          0.35,
+    "grid.linestyle":      "--",
+})
+
 fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
 # 1. Barras por par
 pares_labels = [p for p, _ in pares.most_common()]
 pares_counts = [pares[p] for p in pares_labels]
-axes[0].barh(pares_labels[::-1], pares_counts[::-1], color="tab:red")
-axes[0].set_xlabel("Nº anomalias")
-axes[0].set_title("Anomalias por par de materiales")
-axes[0].grid(axis="x", alpha=0.3)
+axes[0].barh(pares_labels[::-1], pares_counts[::-1], color="#2a78d6", height=0.65)
+axes[0].set_xlabel("Nº de anomalías")
+axes[0].set_title("Anomalías por par de materiales")
+axes[0].grid(axis="x")
 
 # 2. Scatter phi1 vs phi2
 phi1s = [r["phi1"] for r in registros]
 phi2s = [r["phi2"] for r in registros]
-axes[1].scatter(phi1s, phi2s, c=max_val, cmap="Reds", s=10, vmin=1)
-axes[1].set_xlabel("phi1 (deg)"); axes[1].set_ylabel("phi2 (deg)")
-axes[1].set_title("phi1 vs phi2 en anomalias")
+axes[1].scatter(phi1s, phi2s, c=max_val, cmap="Reds", s=12, vmin=1,
+                edgecolors="white", linewidths=0.3)
+axes[1].set_xlabel(r"$\varphi_1$ (°)"); axes[1].set_ylabel(r"$\varphi_2$ (°)")
+axes[1].set_title(r"$\varphi_1$ vs $\varphi_2$ en anomalías")
 
 # 3. Scatter d1 vs d2
 d1s = [r["d1_nm"] for r in registros]
 d2s = [r["d2_nm"] for r in registros]
-sc = axes[2].scatter(d1s, d2s, c=max_val, cmap="Reds", s=10, vmin=1)
-axes[2].set_xlabel("d1 (nm)"); axes[2].set_ylabel("d2 (nm)")
-axes[2].set_title("d1 vs d2 en anomalias")
-fig.colorbar(sc, ax=axes[2], label="max(R,T)")
+sc = axes[2].scatter(d1s, d2s, c=max_val, cmap="Reds", s=12, vmin=1,
+                     edgecolors="white", linewidths=0.3)
+axes[2].set_xlabel(r"$d_1$ (nm)"); axes[2].set_ylabel(r"$d_2$ (nm)")
+axes[2].set_title(r"$d_1$ vs $d_2$ en anomalías")
+cbar = fig.colorbar(sc, ax=axes[2], pad=0.02)
+cbar.set_label(r"$\max(R,\,T)$")
 
 fig.tight_layout()
 out = OUT_DIR / "analisis_anomalias.png"
-fig.savefig(out, dpi=150)
+fig.savefig(out, dpi=200, bbox_inches="tight")
 print(f"\nGrafica guardada: {out}")
 plt.show()

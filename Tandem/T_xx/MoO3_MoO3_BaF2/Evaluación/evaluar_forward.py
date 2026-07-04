@@ -21,7 +21,7 @@ from generalized_transfer_matrix_method import (
 # ============================================================
 # CONFIG
 # ============================================================
-NUM_SEEDS  = 3
+NUM_SEEDS  = 1
 N_EVAL     = 100
 D_MIN      = 200
 D_MAX      = 1200

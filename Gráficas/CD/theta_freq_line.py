@@ -166,8 +166,31 @@ print(f"  Rango espectral: {freq_ridge.min():.0f}–{freq_ridge.max():.0f} cm⁻
       f"({1e4/freq_ridge.max():.1f}–{1e4/freq_ridge.min():.1f} µm)")
 
 # ---------------------------------------------------------------------------
-# Figura: 3 paneles
+# Figura: 3 paneles — estilo TFG
 # ---------------------------------------------------------------------------
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           12,
+    "axes.labelsize":      13,
+    "axes.titlesize":      12,
+    "xtick.labelsize":     11,
+    "ytick.labelsize":     11,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+    "legend.fontsize":     10,
+    "legend.framealpha":   0.9,
+    "legend.edgecolor":    "#c3c2b7",
+    "grid.linewidth":      0.5,
+    "grid.alpha":          0.35,
+    "grid.linestyle":      "--",
+})
+
+COLOR_CD  = "#2a78d6"   # CD / R_l
+COLOR_ACC = "#e34948"   # R_r
+COLOR_MUT = "#898781"   # R_total / referencias
+
 fig = plt.figure(figsize=(18, 6))
 ax1 = fig.add_subplot(1, 3, 1)
 ax2 = fig.add_subplot(1, 3, 2)
@@ -176,15 +199,18 @@ ax3 = fig.add_subplot(1, 3, 3)
 # --- Panel 1: water-plot + cresta ---
 vmax = np.max(CD_matrix)
 im   = ax1.pcolormesh(FREQS, thetas_all, CD_matrix,
-                      cmap="inferno", shading="auto", vmin=0, vmax=vmax)
-fig.colorbar(im, ax=ax1, label=f"|CD| ({modo_str})")
-ax1.plot(freq_ridge, thetas_sel, "w-",  lw=2,   label="cresta real")
-ax1.plot(freq_fit,   thetas_sel, "c--", lw=1.5, label=f"ajuste lineal")
-ax1.set_xlabel("Número de onda (cm⁻¹)", fontsize=12)
-ax1.set_ylabel("φ (°)", fontsize=12)
+                      cmap="inferno", shading="auto", vmin=0, vmax=vmax,
+                      rasterized=True)
+cbar = fig.colorbar(im, ax=ax1, pad=0.02)
+cbar.set_label(rf"$|\mathrm{{CD}}|$ ({modo_str})")
+ax1.plot(freq_ridge, thetas_sel, "-",  color="white",   lw=2,   label="cresta real")
+ax1.plot(freq_fit,   thetas_sel, "--", color="#9ec5f4", lw=1.5, label="ajuste lineal")
+ax1.set_xlabel(r"$\omega$ (cm$^{-1}$)")
+ax1.set_ylabel(r"$\varphi$ (°)")
 ax1.set_yticks(np.arange(0, 181, 30))
-ax1.set_title(f"Water-plot + cresta\n{PAIR.replace('_','/')}  d₁={D1_NM} d₂={D2_NM} nm", fontsize=11)
-ax1.legend(fontsize=9)
+ax1.set_title(f"Water-plot + cresta\n{PAIR.replace('_','/')}  "
+              rf"$d_1$={D1_NM} nm  $d_2$={D2_NM} nm")
+ax1.legend()
 
 def _add_freq_axis(ax, thetas_sel, freq_ridge):
     ax2b = ax.twiny()
@@ -193,44 +219,52 @@ def _add_freq_axis(ax, thetas_sel, freq_ridge):
     freq_ticks = np.interp(phi_ticks, thetas_sel, freq_ridge)
     ax2b.set_xticks(phi_ticks)
     ax2b.set_xticklabels([f"{f:.0f}" for f in freq_ticks])
-    ax2b.set_xlabel("Frecuencia (cm⁻¹)", fontsize=11)
+    ax2b.set_xlabel(r"$\omega$ en la cresta (cm$^{-1}$)", fontsize=11)
+    ax2b.tick_params(direction="in")
 
 # --- Panel 2: CD a lo largo de la cresta ---
-ax2.plot(thetas_sel, cd_ridge, "o-", ms=4, color="tab:orange", lw=1.5)
-ax2.set_xlabel("φ (°)", fontsize=12)
-ax2.set_ylabel("|CD|", fontsize=12)
+ax2.plot(thetas_sel, cd_ridge, "o-", ms=4, color=COLOR_CD, lw=1.6)
+ax2.set_xlabel(r"$\varphi$ (°)")
+ax2.set_ylabel(r"$|\mathrm{CD}|$")
 ax2.set_ylim(0, 1)
-ax2.grid(True, alpha=0.3)
-ax2.axhline(cd_ridge.mean(), color="gray", ls="--", lw=1,
-            label=f"CD medio = {cd_ridge.mean():.2f}")
-ax2.legend(fontsize=10)
-ax2.set_title(
-    f"CD en la cresta\nCD_max={cd_ridge.max():.2f}  CD_min={cd_ridge.min():.2f}",
-    fontsize=11)
+ax2.grid(True)
+ax2.axhline(cd_ridge.mean(), color=COLOR_MUT, ls="--", lw=1,
+            label=rf"$\overline{{|\mathrm{{CD}}|}}$ = {cd_ridge.mean():.2f}")
+ax2.legend()
+ax2.set_title("CD en la cresta\n"
+              rf"$|\mathrm{{CD}}|_\mathrm{{max}}$={cd_ridge.max():.2f}  "
+              rf"$|\mathrm{{CD}}|_\mathrm{{min}}$={cd_ridge.min():.2f}")
 _add_freq_axis(ax2, thetas_sel, freq_ridge)
 
 # --- Panel 3: Reflectancia (R_r, R_l, R_total) a lo largo de la cresta ---
 if USE_TMM:
-    ax3.plot(thetas_sel, rr_ridge, "o-", ms=4, color="tab:red",   lw=1.5, label="$R_r$")
-    ax3.plot(thetas_sel, rl_ridge, "o-", ms=4, color="tab:blue",  lw=1.5, label="$R_l$")
-    ax3.plot(thetas_sel, r_ridge,  "o-", ms=4, color="tab:green", lw=1.5, label="$R_{total}$", alpha=0.7)
+    ax3.plot(thetas_sel, rr_ridge, "o-", ms=4, color=COLOR_ACC, lw=1.6, label="$R_r$")
+    ax3.plot(thetas_sel, rl_ridge, "o-", ms=4, color=COLOR_CD,  lw=1.6, label="$R_l$")
+    ax3.plot(thetas_sel, r_ridge,  "o-", ms=4, color=COLOR_MUT, lw=1.6,
+             label=r"$R_\mathrm{total}$", alpha=0.8)
 else:
-    ax3.plot(thetas_sel, r_ridge, "o-", ms=4, color="tab:blue", lw=1.5, label="$R_{total}$")
-ax3.set_xlabel("φ (°)", fontsize=12)
-ax3.set_ylabel("Reflectancia", fontsize=12)
+    ax3.plot(thetas_sel, r_ridge, "o-", ms=4, color=COLOR_CD, lw=1.6,
+             label=r"$R_\mathrm{total}$")
+ax3.set_xlabel(r"$\varphi$ (°)")
+ax3.set_ylabel("Reflectancia")
 ax3.set_ylim(0, 1)
-ax3.grid(True, alpha=0.3)
-ax3.legend(fontsize=10)
+ax3.grid(True)
+ax3.legend()
 ax3.set_title(
-    f"Reflectancia en la cresta\nR_r_max={rr_ridge.max():.2f}  R_l_max={rl_ridge.max():.2f}" if USE_TMM else
-    f"Reflectancia en la cresta\nR_max={r_ridge.max():.2f}  R_min={r_ridge.min():.2f}",
-    fontsize=11)
+    rf"Reflectancia en la cresta"
+    "\n"
+    rf"$R_{{r,\mathrm{{max}}}}$={rr_ridge.max():.2f}  $R_{{l,\mathrm{{max}}}}$={rl_ridge.max():.2f}"
+    if USE_TMM else
+    rf"Reflectancia en la cresta"
+    "\n"
+    rf"$R_\mathrm{{max}}$={r_ridge.max():.2f}  $R_\mathrm{{min}}$={r_ridge.min():.2f}"
+)
 _add_freq_axis(ax3, thetas_sel, freq_ridge)
 
 fig.tight_layout()
 
 out = Path(__file__).parent / f"ridge_{PAIR}_d1{D1_NM}_d2{D2_NM}.png"
-fig.savefig(out, dpi=150)
+fig.savefig(out, dpi=200, bbox_inches="tight")
 print(f"\nGuardado: {out.name}")
 
 plt.show()

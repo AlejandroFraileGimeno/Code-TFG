@@ -41,8 +41,8 @@ omega  = np.linspace(omegas[0], omegas[1], N)
 
 # Capas intermedias (d en metros, phi en radianes)
 layers = [
-    V2O5(d=100e-9, phi=90*np.pi/180),  
-    MoO3(d=1000e-9, phi=0*np.pi/180),
+    V2O5(d=50e-9, phi=180*np.pi/180),  
+    MoO3(d=50e-9, phi=180*np.pi/180),  
 ]
 
 structure = LayeredStructure(
@@ -63,20 +63,45 @@ for i in range(N):
         T[i, j] = t[j]
 
 # ---------------------------------------------------------------------------
-# Plot
+# Plot — estilo TFG
 # ---------------------------------------------------------------------------
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           13,
+    "axes.labelsize":      14,
+    "xtick.labelsize":     12,
+    "ytick.labelsize":     12,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+    "xtick.top":           True,
+    "ytick.right":         True,
+    "xtick.minor.visible": True,
+    "ytick.minor.visible": True,
+    "legend.fontsize":     12,
+    "legend.framealpha":   0.9,
+    "legend.edgecolor":    "#c3c2b7",
+    "axes.grid":           True,
+    "grid.linewidth":      0.5,
+    "grid.alpha":          0.35,
+    "grid.linestyle":      "--",
+})
 
-fig, ax = plt.subplots(figsize=(10, 5))
+# Paleta fija (orden validado): xx azul, yy aqua, xy amarillo, yx verde
+COLORS = ["#2a78d6", "#1baf7a", "#eda100", "#008300"]
 
-ax.plot(omega, T[:, 0], label='Txx')
-ax.plot(omega, T[:, 1], label='Tyy')
-ax.plot(omega, T[:, 2], label='Txy', linestyle='--')
-ax.plot(omega, T[:, 3], label='Tyx', linestyle='--')
-ax.set_ylabel('Transmision', fontsize=13)
-ax.set_xlabel('Frecuencia (cm$^{-1}$)', fontsize=13)
+fig, ax = plt.subplots(figsize=(9, 4.8))
+
+ax.plot(omega, T[:, 0], color=COLORS[0], lw=1.8, label=r"$T_{xx}$")
+ax.plot(omega, T[:, 1], color=COLORS[1], lw=1.8, label=r"$T_{yy}$")
+ax.plot(omega, T[:, 2], color=COLORS[2], lw=1.6, linestyle="--", label=r"$T_{xy}$")
+ax.plot(omega, T[:, 3], color=COLORS[3], lw=1.6, linestyle="--", label=r"$T_{yx}$")
+ax.set_ylabel("Transmitancia")
+ax.set_xlabel(r"$\omega$ (cm$^{-1}$)")
+ax.set_xlim(omega[0], omega[-1])
 ax.set_ylim(0, 1)
 ax.legend()
-ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.show()

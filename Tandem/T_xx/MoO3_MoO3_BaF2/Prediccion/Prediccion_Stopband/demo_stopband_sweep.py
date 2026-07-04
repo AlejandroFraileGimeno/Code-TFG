@@ -18,6 +18,33 @@ from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
+
+# ---------------------------------------------------------------------------
+# Estilo TFG (solo estética; no afecta a los cálculos)
+# ---------------------------------------------------------------------------
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           12,
+    "axes.labelsize":      13,
+    "axes.titlesize":      12,
+    "xtick.labelsize":     11,
+    "ytick.labelsize":     11,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+    "xtick.top":           True,
+    "ytick.right":         True,
+    "xtick.minor.visible": True,
+    "ytick.minor.visible": True,
+    "legend.fontsize":     11,
+    "legend.framealpha":   0.9,
+    "legend.edgecolor":    "#c3c2b7",
+    "axes.grid":           True,
+    "grid.linewidth":      0.5,
+    "grid.alpha":          0.35,
+    "grid.linestyle":      "--",
+})
 import tensorflow as tf
 
 ROOT_PATH = Path(__file__).resolve().parents[5]
@@ -76,7 +103,7 @@ inv_model = tf.keras.models.load_model(
 )
 fwd_models = [
     tf.keras.models.load_model(FORWARD_DIR / f"Model_{i}seed" / "forward.keras", compile=False)
-    for i in range(1, 4)
+    for i in range(1, 2)
 ]
 print("Modelos cargados.\n")
 
@@ -173,8 +200,8 @@ if valid_r2:
 for ka, a_pct in enumerate(A_PCT_LIST):
     ncols = len(FLANK_LIST)
     fig, axes = plt.subplots(1, ncols, figsize=(4.5 * ncols, 5), sharey=True)
-    cmap = plt.cm.RdYlGn.copy()
-    cmap.set_bad("lightgrey")
+    cmap = plt.cm.viridis.copy()
+    cmap.set_bad("#e1e0d9")
     for kf, flank in enumerate(FLANK_LIST):
         ax   = axes[kf]
         grid = r2_grid[ka, kf, :, :]
@@ -183,20 +210,20 @@ for ka, a_pct in enumerate(A_PCT_LIST):
             extent=[RIGHT_MIN, RIGHT_MAX, LEFT_MIN, LEFT_MAX],
             vmin=0.5, vmax=1.0, cmap=cmap,
         )
-        ax.set_title(f"flank={flank} cm-1", fontsize=10)
-        ax.set_xlabel("right (cm-1)", fontsize=9)
+        ax.set_title(rf"flank = {flank} cm$^{{-1}}$", fontsize=10)
+        ax.set_xlabel(r"right (cm$^{-1}$)", fontsize=9)
         if kf == 0:
-            ax.set_ylabel("left (cm-1)", fontsize=9)
+            ax.set_ylabel(r"left (cm$^{-1}$)", fontsize=9)
         ax.plot([RIGHT_MIN, RIGHT_MAX],
                 [RIGHT_MIN - MIN_WIDTH, RIGHT_MAX - MIN_WIDTH],
                 "k--", lw=0.8, alpha=0.4)
-    fig.colorbar(im, ax=axes[-1], label=f"R2 (+-{MARGIN:.0f} cm-1)")
+    fig.colorbar(im, ax=axes[-1], label=rf"$R^2$ ($\pm${MARGIN:.0f} cm$^{{-1}}$)")
     fig.suptitle(
         f"Stop-band sweep -- T_outside={a_pct}%  T_inside=0  [MoO3/MoO3/BaF2]  EVAL={EVAL_MODE}",
         fontsize=12)
     fig.tight_layout()
     fname = f"heatmap_A{a_pct}_{EVAL_MODE}.png"
-    fig.savefig(OUT_DIR / fname, dpi=150)
+    fig.savefig(OUT_DIR / fname, dpi=200, bbox_inches="tight")
     print(f"Guardado: {fname}")
 
 results_sorted = sorted(all_results, key=lambda r: r['r2'] if not np.isnan(r['r2']) else -999, reverse=True)
@@ -209,27 +236,27 @@ def plot_ejemplos(casos, titulo, fname):
     for k, r in enumerate(casos):
         left, right = r['left'], r['right']
         ax = axes[k]
-        ax.plot(FREQS, r['target'], "k-",  lw=2,   label="Objetivo stop-band")
-        ax.plot(FREQS, r['T_pred'], "r--", lw=1.5, label="Forward NN")
-        ax.plot(FREQS, r['T_tmm'],  "b--", lw=1.5, label="TMM")
+        ax.plot(FREQS, r['target'], color="#0b0b0b", lw=2.0, label="Objetivo stop-band")
+        ax.plot(FREQS, r['T_pred'], color="#e34948", lw=1.4, ls="--", label="Forward NN")
+        ax.plot(FREQS, r['T_tmm'],  color="#2a78d6", lw=1.6, label="TMM")
         lo = max(left - MARGIN, FREQ_MIN)
         hi = min(right + MARGIN, FREQ_MAX)
-        ax.axvspan(lo, hi, alpha=0.06, color="orange", label="Ventana eval")
-        ax.axvspan(left, right, alpha=0.08, color="red", label="Banda")
-        ax.set_xlabel("Numero de onda (cm-1)", fontsize=9)
-        ax.set_ylabel("T_xx", fontsize=9)
+        ax.axvspan(lo, hi, alpha=0.5, color="#e1e0d9", label="Ventana eval")
+        ax.axvspan(left, right, alpha=0.10, color="#e34948", label="Banda")
+        ax.set_xlabel(r"$\omega$ (cm$^{-1}$)", fontsize=9)
+        ax.set_ylabel(r"$T_{xx}$", fontsize=9)
         ax.set_ylim(-0.05, 1.1)
         ax.set_title(
             f"left={left:.0f}  right={right:.0f}  A={r['a_pct']}%  flank={r['flank']}\n"
             f"th1={r['th1']:.0f}  th2={r['th2']:.0f}  d1={r['d1']:.0f}  d2={r['d2']:.0f}\n"
             f"R2={r['r2']:.4f}  MAE={r['mae']:.4f}", fontsize=8)
         ax.legend(fontsize=7)
-        ax.grid(True, alpha=0.3)
+        ax.grid(True)
     for k in range(len(casos), nrows * ncols):
         axes[k].set_visible(False)
     fig.suptitle(titulo, fontsize=11)
     fig.tight_layout()
-    fig.savefig(OUT_DIR / fname, dpi=150)
+    fig.savefig(OUT_DIR / fname, dpi=200, bbox_inches="tight")
     print(f"Guardado: {fname}")
 
 n_ej = min(6, len(results_sorted))

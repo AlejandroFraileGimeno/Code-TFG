@@ -10,6 +10,29 @@ import numpy as np
 import ast
 from pathlib import Path
 
+# ---------------------------------------------------------------------------
+# Estilo TFG (solo estética; no afecta a los cálculos)
+# ---------------------------------------------------------------------------
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           13,
+    "axes.labelsize":      14,
+    "xtick.labelsize":     12,
+    "ytick.labelsize":     12,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+    "xtick.top":           True,
+    "ytick.right":         True,
+    "legend.fontsize":     12,
+    "legend.framealpha":   0.9,
+    "legend.edgecolor":    "#c3c2b7",
+    "grid.linewidth":      0.5,
+    "grid.alpha":          0.35,
+    "grid.linestyle":      "--",
+})
+
 seed = 0
 # list_simulations = [i+2 for i in range(seed)]
 max_Nbranches = 10
@@ -164,18 +187,14 @@ if cabezas:
 
     # Crea el gráfico en funcion de épocas
     plt.figure(figsize=(8, 6), dpi=100)
-    plt.plot(epo, ev_loss, c="k", label="Validation curve")
+    plt.plot(epo, ev_loss, color="#2a78d6", lw=1.6, label="Validación")
     # plt.plot(epo, train_loss, label='Training curve')
-    # plt.xlabel('Epoch',fontsize=20)
-    # plt.ylabel('Loss value',fontsize=20)
-    plt.tick_params(axis="both", which="major", labelsize=15)
-    # plt.title('Historial de Pérdida '+modelo)
-    # plt.legend(fontsize=16)
-    plt.grid(False)
-    # plt.xticks([])
-    # plt.yticks([])
+    plt.xlabel("Época")
+    plt.ylabel("Loss")
+    plt.legend()
+    plt.grid(True)
     filename = directory + "./PaperTresults_epocas" + modelo + ".png"
-    plt.savefig(filename, bbox_inches="tight")
+    plt.savefig(filename, dpi=200, bbox_inches="tight")
     plt.show()
 
     # # Crea el gráfico en función de las cabezas con delta de loss
@@ -219,19 +238,17 @@ if cabezas:
         list_Nbranches[:-1],
         delta_val,
         linestyle="--",
-        marker=".",
-        color="k",
-        label="Validation curve",
+        marker="o",
+        markersize=5,
+        color="#2a78d6",
+        label="Validación",
     )
     plt.xlim([max(list_Nbranches[:-1]), min(list_Nbranches[:-1])])
-    # plt.xlabel('M',fontsize=15)
-    # plt.ylabel(r' $ \Delta $ Loss value',fontsize=15)
+    plt.xlabel("M (nº de ramas)")
+    plt.ylabel(r"$\Delta$ Loss")
     plt.xticks(np.arange(0, 21, 2))
-    plt.tick_params(axis="both", which="major", labelsize=15)
-    # plt.title('Historial de Pérdida de cabezas '+modelo)
-    # plt.legend(fontsize=16)
-    # plt.grid(True)
-    # plt.xticks(list_Nbranches_reversed)
+    plt.legend()
+    plt.grid(True)
     filename = directory + "./PaperTresults_delta_cabezas_final_" + modelo + ".png"
-    plt.savefig(filename, bbox_inches="tight")
+    plt.savefig(filename, dpi=200, bbox_inches="tight")
     plt.show()

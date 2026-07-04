@@ -18,6 +18,33 @@ from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
+
+# ---------------------------------------------------------------------------
+# Estilo TFG (solo estética; no afecta a los cálculos)
+# ---------------------------------------------------------------------------
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           12,
+    "axes.labelsize":      13,
+    "axes.titlesize":      12,
+    "xtick.labelsize":     11,
+    "ytick.labelsize":     11,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+    "xtick.top":           True,
+    "ytick.right":         True,
+    "xtick.minor.visible": True,
+    "ytick.minor.visible": True,
+    "legend.fontsize":     11,
+    "legend.framealpha":   0.9,
+    "legend.edgecolor":    "#c3c2b7",
+    "axes.grid":           True,
+    "grid.linewidth":      0.5,
+    "grid.alpha":          0.35,
+    "grid.linestyle":      "--",
+})
 import tensorflow as tf
 
 ROOT_PATH = Path(__file__).resolve().parents[5]
@@ -143,22 +170,22 @@ valid_r2 = [r['r2'] for r in results if not np.isnan(r['r2'])]
 print(f"R2 medio={np.mean(valid_r2):.4f}  min={np.min(valid_r2):.4f}  max={np.max(valid_r2):.4f}")
 
 fig, ax = plt.subplots(figsize=(11, 6))
-cmap = plt.cm.RdYlGn.copy()
-cmap.set_bad("lightgrey")
+cmap = plt.cm.viridis.copy()
+cmap.set_bad("#e1e0d9")
 im = ax.imshow(
     r2_grid, origin="lower", aspect="auto",
     extent=[F0_MIN, F0_MAX, SIGMA_MIN, SIGMA_MAX],
     vmin=0.9, vmax=1.0, cmap=cmap,
 )
-plt.colorbar(im, ax=ax, label="R2 (ventana +-3sigma)")
-ax.set_xlabel("f0 (cm-1)", fontsize=12)
-ax.set_ylabel("sigma (cm-1)", fontsize=12)
+plt.colorbar(im, ax=ax, label=r"$R^2$ (ventana $\pm3\sigma$)")
+ax.set_xlabel(r"$f_0$ (cm$^{-1}$)")
+ax.set_ylabel(r"$\sigma$ (cm$^{-1}$)")
 ax.set_title(
     f"Calidad ajuste inverso -- dip gaussiano  [MgTeMoO6/MgTeMoO6/BaF2]\n"
     f"EVAL_MODE={EVAL_MODE}  |  N_train={N_TRAIN}  |  gris=fuera del espectro",
     fontsize=11)
 fig.tight_layout()
-fig.savefig(OUT_DIR / f"heatmap_r2_{EVAL_MODE}.png", dpi=150)
+fig.savefig(OUT_DIR / f"heatmap_r2_{EVAL_MODE}.png", dpi=200, bbox_inches="tight")
 print(f"Guardado: heatmap_r2_{EVAL_MODE}.png")
 
 results_valid  = [r for r in results if not np.isnan(r['r2'])]
@@ -181,24 +208,24 @@ def plot_ejemplos(casos, titulo, fname):
     for k, r in enumerate(casos):
         f0, sigma = r['f0'], r['sigma']
         ax = axes[k]
-        ax.plot(FREQS, r['target'], "k-",  lw=2,   label="Objetivo gaussiano")
-        ax.plot(FREQS, r['T_pred'], "r--", lw=1.5, label="Forward NN")
-        ax.plot(FREQS, r['T_tmm'],  "b--", lw=1.5, label="TMM")
-        ax.axvspan(f0 - K*sigma, f0 + K*sigma, alpha=0.08, color="orange", label="Ventana eval")
-        ax.set_xlabel("Numero de onda (cm-1)", fontsize=9)
-        ax.set_ylabel("T_xx", fontsize=9)
+        ax.plot(FREQS, r['target'], color="#0b0b0b", lw=2.0, label="Objetivo gaussiano")
+        ax.plot(FREQS, r['T_pred'], color="#e34948", lw=1.4, ls="--", label="Forward NN")
+        ax.plot(FREQS, r['T_tmm'],  color="#2a78d6", lw=1.6, label="TMM")
+        ax.axvspan(f0 - K*sigma, f0 + K*sigma, alpha=0.5, color="#e1e0d9", label="Ventana eval")
+        ax.set_xlabel(r"$\omega$ (cm$^{-1}$)", fontsize=9)
+        ax.set_ylabel(r"$T_{xx}$", fontsize=9)
         ax.set_ylim(-0.05, 1.1)
         ax.set_title(
             f"f0={f0:.0f}  sigma={sigma:.0f}  "
             f"th1={r['th1']:.0f}  th2={r['th2']:.0f}  d1={r['d1']:.0f}  d2={r['d2']:.0f}\n"
             f"R2={r['r2']:.4f}  MAE={r['mae']:.4f}", fontsize=8)
         ax.legend(fontsize=7)
-        ax.grid(True, alpha=0.3)
+        ax.grid(True)
     for k in range(len(casos), nrows * ncols):
         axes[k].set_visible(False)
     fig.suptitle(titulo, fontsize=12)
     fig.tight_layout()
-    fig.savefig(OUT_DIR / fname, dpi=150)
+    fig.savefig(OUT_DIR / fname, dpi=200, bbox_inches="tight")
     print(f"Guardado: {fname}")
 
 plot_ejemplos(casos_buenos, "Mejores 6 -- dip gaussiano [MgTeMoO6/MgTeMoO6/BaF2] (eval: forward NN)", "ejemplos_buenos.png")

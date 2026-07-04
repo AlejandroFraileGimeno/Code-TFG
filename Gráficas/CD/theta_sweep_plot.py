@@ -135,32 +135,46 @@ else:
     print("Listo.\n")
 
 # ---------------------------------------------------------------------------
-# Plot
+# Plot — estilo TFG
 # ---------------------------------------------------------------------------
 modo_str = "TMM" if USE_TMM else "NN"
 
-fig, ax = plt.subplots(figsize=(11, 6))
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           13,
+    "axes.labelsize":      14,
+    "axes.titlesize":      13,
+    "xtick.labelsize":     12,
+    "ytick.labelsize":     12,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+})
+
+fig, ax = plt.subplots(figsize=(9, 5.5))
 vmax = np.max(CD_matrix)
 im   = ax.pcolormesh(
     FREQS, thetas, CD_matrix,
     cmap="inferno", shading="auto",
     vmin=0, vmax=vmax,
+    rasterized=True,
 )
-cbar = fig.colorbar(im, ax=ax)
-cbar.set_label(f"|CD| normalizado ({modo_str})", fontsize=12)
+cbar = fig.colorbar(im, ax=ax, pad=0.02)
+cbar.set_label(rf"$|\mathrm{{CD}}|$ normalizado ({modo_str})")
+cbar.outline.set_linewidth(0.9)
 
-ax.set_xlabel("Número de onda (cm⁻¹)", fontsize=13)
-ax.set_ylabel("φ (°)", fontsize=13)
+ax.set_xlabel(r"$\omega$ (cm$^{-1}$)")
+ax.set_ylabel(r"$\varphi$ (°)")
 ax.set_yticks(np.arange(0, 181, 30))
 ax.set_title(
     f"Water-plot CD — {PAIR.replace('_', '/')}   "
-    f"d₁={D1_NM:.0f} nm  d₂={D2_NM:.0f} nm  [{modo_str}]",
-    fontsize=13,
+    rf"$d_1$={D1_NM:.0f} nm  $d_2$={D2_NM:.0f} nm  [{modo_str}]",
 )
 fig.tight_layout()
 
 out = Path(__file__).parent / f"theta_sweep_{PAIR}_d1{D1_NM:.0f}_d2{D2_NM:.0f}_{modo_str}.png"
-fig.savefig(out, dpi=150)
+fig.savefig(out, dpi=200, bbox_inches="tight")
 print(f"Guardado: {out.name}")
 
 plt.show()

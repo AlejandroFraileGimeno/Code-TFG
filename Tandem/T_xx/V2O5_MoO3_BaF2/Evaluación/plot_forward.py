@@ -10,6 +10,33 @@ from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
+
+# ---------------------------------------------------------------------------
+# Estilo TFG (solo estética; no afecta a los cálculos)
+# ---------------------------------------------------------------------------
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           12,
+    "axes.labelsize":      13,
+    "axes.titlesize":      12,
+    "xtick.labelsize":     11,
+    "ytick.labelsize":     11,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+    "xtick.top":           True,
+    "ytick.right":         True,
+    "xtick.minor.visible": True,
+    "ytick.minor.visible": True,
+    "legend.fontsize":     11,
+    "legend.framealpha":   0.9,
+    "legend.edgecolor":    "#c3c2b7",
+    "axes.grid":           True,
+    "grid.linewidth":      0.5,
+    "grid.alpha":          0.35,
+    "grid.linestyle":      "--",
+})
 import tensorflow as tf
 
 ROOT_PATH = Path(__file__).resolve().parents[4]
@@ -73,16 +100,16 @@ for i in range(N_PLOT):
     rmse  = float(np.sqrt(np.mean((T_tmm - T_nn)**2)))
 
     ax = axes[i]
-    ax.plot(FREQS, T_tmm, "k-",  lw=2,   label="TMM")
-    ax.plot(FREQS, T_nn,  "r--", lw=1.5, label="Forward NN")
-    ax.set_xlabel("Numero de onda (cm-1)", fontsize=10)
-    ax.set_ylabel("T_xx", fontsize=10)
+    ax.plot(FREQS, T_tmm, color="#0b0b0b", lw=2.0, label="TMM")
+    ax.plot(FREQS, T_nn,  color="#2a78d6", lw=1.6, ls="--", label="NN")
+    ax.set_xlabel(r"$\omega$ (cm$^{-1}$)", fontsize=10)
+    ax.set_ylabel(r"$T_{xx}$", fontsize=10)
     ax.set_ylim(-0.05, 1.05)
     ax.set_title(
         f"th1={th1:.0f}  th2={th2:.0f}  d1={d1:.0f}  d2={d2:.0f} nm\n"
         f"MAE={mae:.4f}  RMSE={rmse:.4f}", fontsize=9)
     ax.legend(fontsize=8)
-    ax.grid(True, alpha=0.3)
+    ax.grid(True)
     print(f"[{i+1}/{N_PLOT}]  MAE={mae:.4f}  RMSE={rmse:.4f}")
 
 for j in range(i + 1, nrows * ncols):
@@ -91,6 +118,6 @@ for j in range(i + 1, nrows * ncols):
 fig.suptitle("Evaluacion forward NN — TMM vs NN  [V2O5/MoO3/BaF2]", fontsize=12)
 fig.tight_layout()
 out = OUT_DIR / "comparativa_forward.png"
-fig.savefig(out, dpi=150)
+fig.savefig(out, dpi=200, bbox_inches="tight")
 print(f"\nGuardado: {out}")
 plt.show()

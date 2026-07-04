@@ -9,6 +9,33 @@ import numpy as np
 from tensorflow.keras import models
 import matplotlib.pyplot as plt
 
+# ---------------------------------------------------------------------------
+# Estilo TFG (solo estética; no afecta a los cálculos)
+# ---------------------------------------------------------------------------
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           12,
+    "axes.labelsize":      13,
+    "axes.titlesize":      12,
+    "xtick.labelsize":     11,
+    "ytick.labelsize":     11,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+    "xtick.top":           True,
+    "ytick.right":         True,
+    "xtick.minor.visible": True,
+    "ytick.minor.visible": True,
+    "legend.fontsize":     11,
+    "legend.framealpha":   0.9,
+    "legend.edgecolor":    "#c3c2b7",
+    "axes.grid":           True,
+    "grid.linewidth":      0.5,
+    "grid.alpha":          0.35,
+    "grid.linestyle":      "--",
+})
+
 ROOT_PATH = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT_PATH / "TMM"))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -63,16 +90,16 @@ def run_inference(model_dir, database, num_seeds=5, N_pred=5, alpha=0):
             preds.append([float(np.squeeze(r)) for r in R_pred_batch])
         R_pred = np.mean(preds, axis=0)
 
-        fig, ax = plt.subplots(figsize=(9, 6))
-        ax.scatter(lambda_mu, R_pred, s=5, c="blue", label="R_total NN")
-        ax.scatter(lambda_mu, R_true, s=5, c="red",  label="R_total TMM")
+        fig, ax = plt.subplots(figsize=(7, 4.8))
+        ax.plot(lambda_mu, R_true, color="#0b0b0b", lw=2.0, label="TMM")
+        ax.plot(lambda_mu, R_pred, color="#2a78d6", lw=1.6, ls="--", label="NN")
         ax.set_xlabel(r"$\lambda$ ($\mu$m)")
-        ax.set_ylabel(r"$R_{total} = R_r + R_l$")
-        ax.set_title(f"MgTeMoO6/V2O5 -- d1={d1} nm  d2={d2} nm  theta={theta} deg")
+        ax.set_ylabel(r"$R_\mathrm{total} = R_r + R_l$")
+        ax.set_title(rf"MgTeMoO6/V2O5 — $d_1$={d1} nm  $d_2$={d2} nm  $\theta$={theta}°")
         ax.legend()
         fig.tight_layout()
         fname = results_dir / f"comparison_d1{d1}_d2{d2}_th{theta}.png"
-        fig.savefig(fname, dpi=150)
+        fig.savefig(fname, dpi=200, bbox_inches="tight")
         plt.close()
         print(f"  Guardado: {fname.relative_to(ROOT_PATH)}")
 

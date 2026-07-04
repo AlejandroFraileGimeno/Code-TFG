@@ -142,8 +142,21 @@ for i, (d1, d2) in enumerate(COMBOS):
 print(f"\nTotal: {(time.time()-t_total)/60:.1f} min")
 
 # ---------------------------------------------------------------------------
-# Figura grid
+# Figura grid — estilo TFG
 # ---------------------------------------------------------------------------
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           12,
+    "axes.labelsize":      12,
+    "axes.titlesize":      12,
+    "xtick.labelsize":     11,
+    "ytick.labelsize":     11,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+})
+
 vmax_global = max(m.max() for m in matrices)
 
 fig, axes = plt.subplots(nrows, ncols, figsize=(12, 5 * nrows), squeeze=False)
@@ -153,12 +166,15 @@ for i, (ax, mat, (d1, d2)) in enumerate(zip(axes.flat, matrices, COMBOS)):
         FREQS, thetas, mat,
         cmap="inferno", shading="auto",
         vmin=0, vmax=vmax_global,
+        rasterized=True,
     )
-    ax.set_title(f"d₁={d1} nm  d₂={d2} nm   CD_max={mat.max():.2f}", fontsize=11)
-    ax.set_xlabel("Número de onda (cm⁻¹)", fontsize=10)
-    ax.set_ylabel("φ (°)", fontsize=10)
+    ax.set_title(rf"$d_1$={d1} nm  $d_2$={d2} nm   "
+                 rf"$|\mathrm{{CD}}|_\mathrm{{max}}$={mat.max():.2f}")
+    ax.set_xlabel(r"$\omega$ (cm$^{-1}$)")
+    ax.set_ylabel(r"$\varphi$ (°)")
     ax.set_yticks(np.arange(0, 181, 30))
-    fig.colorbar(im, ax=ax, label=f"|CD| ({modo_str})")
+    cbar = fig.colorbar(im, ax=ax, pad=0.02)
+    cbar.set_label(rf"$|\mathrm{{CD}}|$ ({modo_str})")
 
 # Ocultar subplots sobrantes si n_combos es impar
 for j in range(i + 1, nrows * ncols):
@@ -171,7 +187,7 @@ fig.suptitle(
 fig.tight_layout()
 
 out = Path(__file__).parent / f"theta_grid_{PAIR}_{modo_str}.png"
-fig.savefig(out, dpi=150, bbox_inches="tight")
+fig.savefig(out, dpi=200, bbox_inches="tight")
 print(f"Guardado: {out.name}")
 
 plt.show()

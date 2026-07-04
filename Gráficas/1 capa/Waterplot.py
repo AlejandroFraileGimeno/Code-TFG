@@ -65,6 +65,21 @@ print("  100% — listo")
 
 FREQ_GRID, THICK_GRID = np.meshgrid(freqs, thicknesses)
 
+# ---------------------------------------------------------------------------
+# Estilo TFG
+# ---------------------------------------------------------------------------
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           13,
+    "axes.labelsize":      14,
+    "xtick.labelsize":     12,
+    "ytick.labelsize":     12,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+})
+
 if PLOT_TYPE == "3d":
     fig = plt.figure(figsize=(12, 7))
     ax = fig.add_subplot(111, projection="3d")
@@ -73,18 +88,20 @@ if PLOT_TYPE == "3d":
         cmap="viridis", linewidth=0, antialiased=True, alpha=0.95,
     )
     cbar = fig.colorbar(surf, ax=ax, shrink=0.5, pad=0.1)
-    cbar.set_label(f"$T_{{{_label}}}$", fontsize=16)
-    ax.set_xlabel(r"$\omega$ (cm$^{-1}$)", fontsize=12, labelpad=10)
-    ax.set_ylabel("Espesor (nm)", fontsize=12, labelpad=10)
-    ax.set_zlabel(f"$T_{{{_label}}}$", fontsize=14, labelpad=8)
+    cbar.set_label(f"$T_{{{_label}}}$", fontsize=14)
+    ax.set_xlabel(r"$\omega$ (cm$^{-1}$)", labelpad=10)
+    ax.set_ylabel("Espesor (nm)", labelpad=10)
+    ax.set_zlabel(f"$T_{{{_label}}}$", labelpad=8)
     ax.view_init(elev=ELEVATION, azim=AZIMUTH)
 else:
-    fig, ax = plt.subplots(figsize=(10, 6))
-    im = ax.pcolormesh(freqs, thicknesses, T_map, cmap="viridis", shading="auto")
-    cbar = fig.colorbar(im, ax=ax)
-    cbar.set_label(f"$T_{{{_label}}}$", fontsize=18)
-    ax.set_xlabel(r"$\omega$ (cm$^{-1}$)", fontsize=14)
-    ax.set_ylabel("Espesor (nm)", fontsize=14)
+    fig, ax = plt.subplots(figsize=(9, 5.5))
+    im = ax.pcolormesh(freqs, thicknesses, T_map, cmap="viridis", shading="auto",
+                       rasterized=True)
+    cbar = fig.colorbar(im, ax=ax, pad=0.02)
+    cbar.set_label(f"$T_{{{_label}}}$", fontsize=14)
+    cbar.outline.set_linewidth(0.9)
+    ax.set_xlabel(r"$\omega$ (cm$^{-1}$)")
+    ax.set_ylabel("Espesor (nm)")
 
 fig.tight_layout()
 plt.show()

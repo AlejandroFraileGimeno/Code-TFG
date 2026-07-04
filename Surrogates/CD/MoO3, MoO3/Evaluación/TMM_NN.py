@@ -18,6 +18,33 @@ import numpy as np
 from tensorflow.keras import models
 import matplotlib.pyplot as plt
 
+# ---------------------------------------------------------------------------
+# Estilo TFG (solo estética; no afecta a los cálculos)
+# ---------------------------------------------------------------------------
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           12,
+    "axes.labelsize":      13,
+    "axes.titlesize":      12,
+    "xtick.labelsize":     11,
+    "ytick.labelsize":     11,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+    "xtick.top":           True,
+    "ytick.right":         True,
+    "xtick.minor.visible": True,
+    "ytick.minor.visible": True,
+    "legend.fontsize":     11,
+    "legend.framealpha":   0.9,
+    "legend.edgecolor":    "#c3c2b7",
+    "axes.grid":           True,
+    "grid.linewidth":      0.5,
+    "grid.alpha":          0.35,
+    "grid.linestyle":      "--",
+})
+
 ROOT_PATH = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT_PATH / "TMM"))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -85,14 +112,13 @@ def run_inference(
         CD_pred = np.mean(preds, axis=0)
 
         lambda_nm = 1e4 / freqs
-        plt.rcParams["figure.figsize"] = (9, 9)
-        fig, ax = plt.subplots()
-        ax.scatter(lambda_nm, CD_pred, s=5, c="blue", label="CD NN")
-        ax.scatter(lambda_nm, CD_true, s=5, c="red", label="CD true")
+        fig, ax = plt.subplots(figsize=(7, 4.8))
+        ax.plot(lambda_nm, CD_true, color="#0b0b0b", lw=2.0, label="TMM")
+        ax.plot(lambda_nm, CD_pred, color="#2a78d6", lw=1.6, ls="--", label="NN")
         ax.set_xlabel(r"$\lambda$ ($\mu m$)")
-        ax.set_ylabel("CD reflection")
+        ax.set_ylabel(r"$|\mathrm{CD}|$")
         plt.legend()
-        plt.savefig(results_dir / f"comparison_parameters{[d_layers_nm, angles_deg]}.png")
+        plt.savefig(results_dir / f"comparison_parameters{[d_layers_nm, angles_deg]}.png", dpi=200, bbox_inches="tight")
         plt.close()
 
     print(f"Total execution time: {time.time() - t1:.2f} seconds")

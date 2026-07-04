@@ -62,20 +62,45 @@ for i in range(N):
         R[i, j] = r[j]
 
 # ---------------------------------------------------------------------------
-# Plot
+# Plot — estilo TFG
 # ---------------------------------------------------------------------------
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           13,
+    "axes.labelsize":      14,
+    "xtick.labelsize":     12,
+    "ytick.labelsize":     12,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+    "xtick.top":           True,
+    "ytick.right":         True,
+    "xtick.minor.visible": True,
+    "ytick.minor.visible": True,
+    "legend.fontsize":     12,
+    "legend.framealpha":   0.9,
+    "legend.edgecolor":    "#c3c2b7",
+    "axes.grid":           True,
+    "grid.linewidth":      0.5,
+    "grid.alpha":          0.35,
+    "grid.linestyle":      "--",
+})
 
-fig, ax = plt.subplots(figsize=(10, 5))
+# Paleta fija (orden validado): xx azul, yy aqua, xy amarillo, yx verde
+COLORS = ["#2a78d6", "#1baf7a", "#eda100", "#008300"]
 
-ax.plot(omega, R[:, 0], label='Rxx')
-ax.plot(omega, R[:, 1], label='Ryy')
-ax.plot(omega, R[:, 2], label='Rxy', linestyle='--')
-ax.plot(omega, R[:, 3], label='Ryx', linestyle='--')
-ax.set_ylabel('Reflexion', fontsize=13)
-ax.set_xlabel('Frecuencia (cm$^{-1}$)', fontsize=13)
+fig, ax = plt.subplots(figsize=(9, 4.8))
+
+ax.plot(omega, R[:, 0], color=COLORS[0], lw=1.8, label=r"$R_{xx}$")
+ax.plot(omega, R[:, 1], color=COLORS[1], lw=1.8, label=r"$R_{yy}$")
+ax.plot(omega, R[:, 2], color=COLORS[2], lw=1.6, linestyle="--", label=r"$R_{xy}$")
+ax.plot(omega, R[:, 3], color=COLORS[3], lw=1.6, linestyle="--", label=r"$R_{yx}$")
+ax.set_ylabel("Reflectancia")
+ax.set_xlabel(r"$\omega$ (cm$^{-1}$)")
+ax.set_xlim(omega[0], omega[-1])
 ax.set_ylim(0, 1)
 ax.legend()
-ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.show()

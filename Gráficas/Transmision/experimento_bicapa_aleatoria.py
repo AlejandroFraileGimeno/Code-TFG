@@ -62,27 +62,51 @@ def check_impossible(R, T):
     return msgs
 
 
+# Estilo TFG
+plt.rcParams.update({
+    "font.family":         "serif",
+    "mathtext.fontset":    "cm",
+    "font.size":           12,
+    "axes.labelsize":      13,
+    "xtick.labelsize":     11,
+    "ytick.labelsize":     11,
+    "axes.linewidth":      0.9,
+    "xtick.direction":     "in",
+    "ytick.direction":     "in",
+    "xtick.top":           True,
+    "ytick.right":         True,
+    "legend.fontsize":     11,
+    "legend.framealpha":   0.9,
+    "legend.edgecolor":    "#c3c2b7",
+    "axes.grid":           True,
+    "grid.linewidth":      0.5,
+    "grid.alpha":          0.35,
+    "grid.linestyle":      "--",
+})
+
+# Paleta fija (orden validado): xx azul, yy aqua, xy amarillo, yx verde
+_COLORS = ["#2a78d6", "#1baf7a", "#eda100", "#008300"]
+
+
 def plot_caso(omega, R, T, mat1, mat2, sust, d1, d2, phi1, phi2, alpha, count, msgs):
     fig, axs = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
 
-    axs[0].plot(omega, R[:, 0], label='Rxx')
-    axs[0].plot(omega, R[:, 1], label='Ryy')
-    axs[0].plot(omega, R[:, 2], label='Rxy', linestyle='--')
-    axs[0].plot(omega, R[:, 3], label='Ryx', linestyle='--')
-    axs[0].axhline(1, color='k', lw=0.8, linestyle=':')
-    axs[0].set_ylabel('Reflexion', fontsize=13)
+    axs[0].plot(omega, R[:, 0], color=_COLORS[0], lw=1.6, label=r"$R_{xx}$")
+    axs[0].plot(omega, R[:, 1], color=_COLORS[1], lw=1.6, label=r"$R_{yy}$")
+    axs[0].plot(omega, R[:, 2], color=_COLORS[2], lw=1.4, linestyle="--", label=r"$R_{xy}$")
+    axs[0].plot(omega, R[:, 3], color=_COLORS[3], lw=1.4, linestyle="--", label=r"$R_{yx}$")
+    axs[0].axhline(1, color="#0b0b0b", lw=0.8, linestyle=":")
+    axs[0].set_ylabel("Reflectancia")
     axs[0].legend()
-    axs[0].grid(True, alpha=0.3)
 
-    axs[1].plot(omega, T[:, 0], label='Txx')
-    axs[1].plot(omega, T[:, 1], label='Tyy')
-    axs[1].plot(omega, T[:, 2], label='Txy', linestyle='--')
-    axs[1].plot(omega, T[:, 3], label='Tyx', linestyle='--')
-    axs[1].axhline(1, color='k', lw=0.8, linestyle=':')
-    axs[1].set_ylabel('Transmision', fontsize=13)
-    axs[1].set_xlabel('Frecuencia (cm$^{-1}$)', fontsize=13)
+    axs[1].plot(omega, T[:, 0], color=_COLORS[0], lw=1.6, label=r"$T_{xx}$")
+    axs[1].plot(omega, T[:, 1], color=_COLORS[1], lw=1.6, label=r"$T_{yy}$")
+    axs[1].plot(omega, T[:, 2], color=_COLORS[2], lw=1.4, linestyle="--", label=r"$T_{xy}$")
+    axs[1].plot(omega, T[:, 3], color=_COLORS[3], lw=1.4, linestyle="--", label=r"$T_{yx}$")
+    axs[1].axhline(1, color="#0b0b0b", lw=0.8, linestyle=":")
+    axs[1].set_ylabel("Transmitancia")
+    axs[1].set_xlabel(r"$\omega$ (cm$^{-1}$)")
     axs[1].legend()
-    axs[1].grid(True, alpha=0.3)
 
     title = (
         f"CASO ANOMALO #{count}\n"
@@ -95,7 +119,7 @@ def plot_caso(omega, R, T, mat1, mat2, sust, d1, d2, phi1, phi2, alpha, count, m
     fig.tight_layout()
 
     out = CASOS_DIR / f"caso_{count:05d}.png"
-    fig.savefig(out, dpi=150)
+    fig.savefig(out, dpi=200, bbox_inches="tight")
     plt.close(fig)
     print(f"  Figura guardada: {out}")
 
