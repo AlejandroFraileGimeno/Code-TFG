@@ -66,7 +66,7 @@ BOUNDS = [
 
 ROOT_PATH = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT_PATH / "TMM"))
-sys.path.insert(0, str(ROOT_PATH / "Surrogates" / "CD" / "MoO3, MgTeMoO6"))
+sys.path.insert(0, str(ROOT_PATH / "Surrogates" / "CD" / "MoO3_MgTeMoO6"))
 
 from generalized_transfer_matrix_method import (
     Air, Au, MoO3, MgTeMoO6, LayeredStructure, calculate_circular_dichroism_ref,

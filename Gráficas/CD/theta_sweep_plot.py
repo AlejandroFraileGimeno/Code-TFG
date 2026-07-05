@@ -54,15 +54,15 @@ def _layers(pair, d1_m, d2_m, phi_rad):
     return L[pair]
 
 _SURROGATE_MAP = {
-    "MgTeMoO6_MgTeMoO6": "MgTeMoO6, MgTeMoO6",
-    "MoO3_MgTeMoO6":     "MoO3, MgTeMoO6",
-    "MoO3_MoO3":         "MoO3, MoO3",
-    "MoO3_V2O5":         "MoO3, V2O5",
-    "V2O5_V2O5":         "V2O5, V2O5",
-    "V2O5_MgTeMoO6":     "V2O5, MgTeMoO6",
-    "MgTeMoO6_MoO3":     "MgTeMoO6, MoO3",
-    "MgTeMoO6_V2O5":     "MgTeMoO6, V2O5",
-    "V2O5_MoO3":         "V2O5, MoO3",
+    "MgTeMoO6_MgTeMoO6": "MgTeMoO6_MgTeMoO6",
+    "MoO3_MgTeMoO6":     "MoO3_MgTeMoO6",
+    "MoO3_MoO3":         "MoO3_MoO3",
+    "MoO3_V2O5":         "MoO3_V2O5",
+    "V2O5_V2O5":         "V2O5_V2O5",
+    "V2O5_MgTeMoO6":     "V2O5_MgTeMoO6",
+    "MgTeMoO6_MoO3":     "MgTeMoO6_MoO3",
+    "MgTeMoO6_V2O5":     "MgTeMoO6_V2O5",
+    "V2O5_MoO3":         "V2O5_MoO3",
 }
 
 if PAIR not in _SURROGATE_MAP:

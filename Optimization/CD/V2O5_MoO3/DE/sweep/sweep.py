@@ -20,7 +20,7 @@ from tensorflow.keras import models as tf_models
 
 ROOT_PATH = Path(__file__).resolve().parents[5]
 sys.path.insert(0, str(ROOT_PATH / "TMM"))
-sys.path.insert(0, str(ROOT_PATH / "Surrogates" / "CD" / "V2O5, MoO3"))
+sys.path.insert(0, str(ROOT_PATH / "Surrogates" / "CD" / "V2O5_MoO3"))
 
 from generalized_transfer_matrix_method import (
     Air, Au, V2O5, MoO3, LayeredStructure, calculate_circular_dichroism_ref,

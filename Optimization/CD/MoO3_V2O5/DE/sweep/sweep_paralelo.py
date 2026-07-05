@@ -21,7 +21,7 @@ from scipy.signal import find_peaks
 
 ROOT_PATH = Path(__file__).resolve().parents[5]
 sys.path.insert(0, str(ROOT_PATH / "TMM"))
-sys.path.insert(0, str(ROOT_PATH / "Surrogates" / "CD" / "MoO3, V2O5"))
+sys.path.insert(0, str(ROOT_PATH / "Surrogates" / "CD" / "MoO3_V2O5"))
 
 from generalized_transfer_matrix_method import (
     Air, Au, MoO3, V2O5, LayeredStructure, calculate_circular_dichroism_ref,
