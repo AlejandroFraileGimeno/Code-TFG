@@ -46,10 +46,10 @@ MODELS_DIR = ROOT / "Models"
 BASE_DIR   = Path(__file__).resolve().parent
 
 CASOS = [
-    ("$|\\mathrm{CD}|$",
+    (r"$|\mathbf{CD}_{\mathbf{norm}}|$",
      MODELS_DIR / "CD" / "MoO3_MoO3",
      BASE_DIR / "Evaluación" / "training_history_CD.png"),
-    ("$R_{\\mathrm{total}}$",
+    (r"$\mathbf{R}_{\mathbf{total}}$",
      MODELS_DIR / "R_total" / "MoO3_MoO3",
      BASE_DIR / "Evaluación R_total" / "training_history_R_total.png"),
 ]
@@ -85,7 +85,7 @@ for titulo, model_dir, out in CASOS:
 
     ax.set_xlabel("Época")
     ax.set_ylabel("MSE (escala logarítmica)")
-    ax.set_title(titulo, pad=9)
+    ax.set_title(titulo, pad=9, fontweight="bold")
     ax.legend(loc="upper right")
     ax.grid(True, which="both")
     ax.set_xlim(left=0)

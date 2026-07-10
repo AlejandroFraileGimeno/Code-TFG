@@ -36,11 +36,11 @@ import matplotlib.pyplot as plt
 plt.rcParams.update({
     "font.family":         "serif",
     "mathtext.fontset":    "cm",
-    "font.size":           12,
-    "axes.labelsize":      13,
-    "axes.titlesize":      12,
-    "xtick.labelsize":     11,
-    "ytick.labelsize":     11,
+    "font.size":           15,
+    "axes.labelsize":      18,
+    "axes.titlesize":      15,
+    "xtick.labelsize":     14,
+    "ytick.labelsize":     14,
     "axes.linewidth":      0.9,
     "xtick.direction":     "in",
     "ytick.direction":     "in",
@@ -48,7 +48,7 @@ plt.rcParams.update({
     "ytick.right":         True,
     "xtick.minor.visible": True,
     "ytick.minor.visible": True,
-    "legend.fontsize":     11,
+    "legend.fontsize":     14,
     "legend.framealpha":   0.9,
     "legend.edgecolor":    "#c3c2b7",
     "axes.grid":           True,
@@ -219,16 +219,18 @@ for filter_name, combos, tc_offset in [
             extent=[FMID_MIN, FMID_MAX, FLANK_MIN, FLANK_MAX],
             vmin=0.5, vmax=1.0, cmap=cmap,
         )
-        ax.set_title(f"T_left={T_left:.1f}  T_right={T_right:.1f}", fontsize=10)
-        ax.set_xlabel("f_mid (cm$^{-1}$)", fontsize=9)
+        ax.set_title(rf"$T_l={T_left:.2f}$,  $T_r={T_right:.2f}$", fontsize=14)
+        ax.set_xlabel(r"$\omega_{\mathrm{mid}}$ (cm$^{-1}$)")
         if ci == 0:
-            ax.set_ylabel("FLANK (cm$^{-1}$)", fontsize=9)
-    fig.colorbar(im, ax=axes[-1], label=f"R2 (ventana +-{MARGIN:.0f} cm-1)")
-    label = "Paso-alto (high-pass)" if filter_name == "highpass" else "Paso-bajo (low-pass)"
-    fig.suptitle(f"Filtro de borde -- {label}  [V2O5/MoO3/BaF2]  EVAL={EVAL_MODE}", fontsize=12)
+            ax.set_ylabel(r"Anchura del flanco (cm$^{-1}$)")
+    cbar = fig.colorbar(im, ax=axes[-1])
+    cbar.set_label(rf"$R^2$ (ventana $\pm{MARGIN:.0f}$ cm$^{{-1}}$)", fontsize=18)
     fig.tight_layout()
     fname_out = f"heatmap_{filter_name}.png"
     fig.savefig(OUT_DIR / fname_out, dpi=200, bbox_inches="tight")
+    ARREGLOS = ROOT_PATH / "Arreglos en Gráficos"
+    ARREGLOS.mkdir(exist_ok=True)
+    fig.savefig(ARREGLOS / f"heatmap_edge_{filter_name}_V2O5_MoO3.png", dpi=200, bbox_inches="tight")
     print(f"Guardado: {fname_out}")
 
 def plot_ejemplos(casos, titulo, fname):
@@ -240,8 +242,8 @@ def plot_ejemplos(casos, titulo, fname):
         f_mid = r['f_mid']
         ax = axes[k]
         ax.plot(FREQS, r['target'], color="#0b0b0b", lw=2.0, label="Objetivo")
-        ax.plot(FREQS, r['T_pred'], color="#e34948", lw=1.4, ls="--", label="Forward NN")
-        ax.plot(FREQS, r['T_tmm'],  color="#2a78d6", lw=1.6, label="TMM")
+        ax.plot(FREQS, r['T_pred'], color="#e34948", lw=1.4, ls="--", label="Surrogate")
+        ax.plot(FREQS, r['T_tmm'],  color="#2a78d6", lw=1.6, label="Simulación")
         lo = max(f_mid - MARGIN, FREQ_MIN)
         hi = min(f_mid + MARGIN, FREQ_MAX)
         ax.axvspan(lo, hi, alpha=0.5, color="#e1e0d9", label="Ventana eval")
@@ -250,10 +252,11 @@ def plot_ejemplos(casos, titulo, fname):
         ax.set_ylabel(r"$T_{xx}$", fontsize=9)
         ax.set_ylim(-0.05, 1.1)
         ax.set_title(
-            f"f_mid={f_mid:.0f}  FLANK={r['flank']:.0f}  "
-            f"Tl={r['T_left']:.1f}  Tr={r['T_right']:.1f}\n"
-            f"th1={r['th1']:.0f}  th2={r['th2']:.0f}  d1={r['d1']:.0f}  d2={r['d2']:.0f}\n"
-            f"R2={r['r2']:.4f}  MAE={r['mae']:.4f}", fontsize=8)
+            rf"$\omega_{{\mathrm{{mid}}}}={f_mid:.0f}$ cm$^{{-1}}$, $\Delta\omega={r['flank']:.0f}$ cm$^{{-1}}$, "
+            rf"$T_l={r['T_left']:.2f}$, $T_r={r['T_right']:.2f}$" "\n"
+            rf"$\phi_1={r['th1']:.0f}^\circ$, $\phi_2={r['th2']:.0f}^\circ$, "
+            rf"$d_1={r['d1']:.0f}$ nm, $d_2={r['d2']:.0f}$ nm" "\n"
+            rf"$R^2={r['r2']:.3f}$", fontsize=9)
         ax.legend(fontsize=7)
         ax.grid(True)
     for k in range(len(casos), nrows * ncols):
@@ -273,6 +276,32 @@ for filter_name in ("highpass",):
     for r in buenos + malos:
         r['T_tmm'] = tmm_spectrum(r['th1'], r['th2'], r['d1'], r['d2'])
     label = "paso-alto" if filter_name == "highpass" else "paso-bajo"
+    # -----------------------------------------------------------------------
+    # Figura individual del mejor caso (estilo TFG)
+    # -----------------------------------------------------------------------
+    mejor = buenos[0]
+    figm, axm = plt.subplots(figsize=(5.5, 5.5))
+    lo = max(mejor['f_mid'] - MARGIN, FREQ_MIN)
+    hi = min(mejor['f_mid'] + MARGIN, FREQ_MAX)
+    axm.axvspan(lo, hi, alpha=0.5, color="#e1e0d9", zorder=0, label="Ventana eval")
+    axm.plot(FREQS, mejor['target'], color="#0b0b0b", lw=2.0, label="Objetivo")
+    axm.plot(FREQS, mejor['T_tmm'],  color="#2a78d6", lw=1.6, label="Simulación")
+    axm.plot(FREQS, mejor['T_pred'], color="#e34948", lw=1.4, ls="--", label="Surrogate")
+    axm.set_title(
+        "V$_2$O$_5$ / MoO$_3$\n"
+        + rf"$\omega_{{\mathrm{{mid}}}}={mejor['f_mid']:.0f}$ cm$^{{-1}}$, $T_l={mejor['T_left']:.2f}$, $T_r={mejor['T_right']:.2f}$, $R^2={mejor['r2']:.3f}$" + "\n"
+        + rf"$\phi_1={mejor['th1']:.0f}^\circ$, $\phi_2={mejor['th2']:.0f}^\circ$, $d_1={mejor['d1']:.0f}$ nm, $d_2={mejor['d2']:.0f}$ nm",
+        pad=8, fontsize=13,
+    )
+    axm.set_xlabel(r"$\omega$ (cm$^{-1}$)")
+    axm.set_ylabel(r"$T_{xx}$")
+    axm.set_xlim(FREQS[0], FREQS[-1])
+    axm.set_ylim(-0.02, 1.05)
+    axm.legend(loc="upper left")
+    figm.tight_layout()
+    figm.savefig(ARREGLOS / f"mejor_caso_edge_{filter_name}_V2O5_MoO3.png", dpi=200, bbox_inches="tight")
+    print(f"Guardado: mejor_caso_edge_{filter_name}_V2O5_MoO3.png")
+
     plot_ejemplos(buenos, f"Mejores 6 -- filtro {label} [V2O5/MoO3/BaF2]", f"ejemplos_buenos_{filter_name}.png")
     plot_ejemplos(malos,  f"Peores 6  -- filtro {label} [V2O5/MoO3/BaF2]", f"ejemplos_malos_{filter_name}.png")
 

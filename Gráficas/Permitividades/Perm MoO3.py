@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -77,8 +79,12 @@ eps_z = epsilon_tolo_multi(w, **params["epsilon_z"])
 plt.rcParams.update({
     "font.family": "serif",
     "mathtext.fontset": "cm",
-    "font.size": 12,
-    "axes.linewidth": 1.0,
+    "font.size": 18,
+    "axes.labelsize": 22,
+    "xtick.labelsize": 17,
+    "ytick.labelsize": 17,
+    "legend.fontsize": 16,
+    "axes.linewidth": 1.2,
     "xtick.direction": "in",
     "ytick.direction": "in",
     "xtick.top": True,
@@ -90,7 +96,7 @@ plt.rcParams.update({
 #  Figura
 # ============================================================
 
-fig, ax = plt.subplots(figsize=(7.6, 3.8))
+fig, ax = plt.subplots(figsize=(5.8, 4.2))
 
 ylim = (-300, 300)
 
@@ -142,7 +148,7 @@ for overlap in [overlap_12, overlap_23]:
 ax.plot(
     w, np.real(eps_x),
     color="black",
-    linewidth=1.7,
+    linewidth=2.2,
     linestyle="-",
     label=r"$\mathrm{Re}(\varepsilon_x)$",
     zorder=2
@@ -151,7 +157,7 @@ ax.plot(
 ax.plot(
     w, np.real(eps_y),
     color="black",
-    linewidth=1.7,
+    linewidth=2.2,
     linestyle="--",
     label=r"$\mathrm{Re}(\varepsilon_y)$",
     zorder=2
@@ -160,7 +166,7 @@ ax.plot(
 ax.plot(
     w, np.real(eps_z),
     color="black",
-    linewidth=1.7,
+    linewidth=2.2,
     linestyle=":",
     label=r"$\mathrm{Re}(\varepsilon_z)$",
     zorder=2
@@ -177,7 +183,7 @@ ax.text(
     r"RB$_1$",
     ha="center",
     va="center",
-    fontsize=13,
+    fontsize=19,
     fontweight="bold"
 )
 
@@ -187,7 +193,7 @@ ax.text(
     r"RB$_2$",
     ha="center",
     va="center",
-    fontsize=13,
+    fontsize=19,
     fontweight="bold"
 )
 
@@ -197,7 +203,7 @@ ax.text(
     r"RB$_3$",
     ha="center",
     va="center",
-    fontsize=13,
+    fontsize=19,
     fontweight="bold"
 )
 
@@ -206,7 +212,7 @@ ax.text(
 #  Ajustes de ejes
 # ============================================================
 
-ax.axhline(0, color="black", linewidth=0.8, zorder=1.5)
+ax.axhline(0, color="black", linewidth=1.0, zorder=1.5)
 
 ax.set_xlim(450, 1050)
 ax.set_ylim(*ylim)
@@ -219,7 +225,8 @@ ax.set_xticks([500, 600, 700, 800, 900, 1000])
 
 ax.minorticks_on()
 
-ax.tick_params(which="both", direction="in", top=True, right=True)
+ax.tick_params(which="major", direction="in", top=True, right=True, width=1.2, length=6)
+ax.tick_params(which="minor", direction="in", top=True, right=True, width=1.0, length=3)
 
 
 # ============================================================
@@ -227,9 +234,12 @@ ax.tick_params(which="both", direction="in", top=True, right=True)
 # ============================================================
 
 ax.legend(
-    frameon=False,
+    frameon=True,
+    facecolor="white",
+    edgecolor="0.55",
+    framealpha=1.0,
     loc="lower right",
-    handlelength=2.6
+    handlelength=2.4
 )
 
 
@@ -237,7 +247,10 @@ ax.legend(
 #  Guardar figura
 # ============================================================
 
-plt.savefig("MoO3_Re_epsilon_Reststrahlen_BW.pdf", bbox_inches="tight")
-plt.savefig("MoO3_Re_epsilon_Reststrahlen_BW.png", dpi=400, bbox_inches="tight")
+out = Path(__file__).resolve().parents[2] / "Arreglos en Gráficos"
+out.mkdir(exist_ok=True)
+plt.savefig(out / "MoO3_Re_epsilon_Reststrahlen_BW.pdf", bbox_inches="tight")
+plt.savefig(out / "MoO3_Re_epsilon_Reststrahlen_BW.png", dpi=400, bbox_inches="tight")
+print(f"Guardado en: {out}")
 
 plt.show()

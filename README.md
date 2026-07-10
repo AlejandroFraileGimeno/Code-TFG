@@ -59,11 +59,11 @@ Code TFG/
 │               ├── de_optimizer.py   # Optimización por Evolución Diferencial
 │               └── results/          # PNGs con el espectro óptimo encontrado
 │
-├── Seed/
-│   └── SEED_LIST.csv             # Semillas aleatorias para reproducibilidad
-│
-└── Transmision_Tss/              # Experimentos previos con transmisión (referencia)
+└── Seed/
+    └── SEED_LIST.csv             # Semillas aleatorias para reproducibilidad
 ```
+
+> **Nota:** `Datasets/` no se versiona (son ~4 GB de espectros). Se regeneran con `generate_database.py` (paso 1). Los modelos ya entrenados **sí** se incluyen en `Models/`.
 
 ## Flujo de trabajo
 

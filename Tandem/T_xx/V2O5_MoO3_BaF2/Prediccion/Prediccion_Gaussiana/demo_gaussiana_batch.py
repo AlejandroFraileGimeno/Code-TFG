@@ -25,11 +25,11 @@ import matplotlib.pyplot as plt
 plt.rcParams.update({
     "font.family":         "serif",
     "mathtext.fontset":    "cm",
-    "font.size":           12,
-    "axes.labelsize":      13,
-    "axes.titlesize":      12,
-    "xtick.labelsize":     11,
-    "ytick.labelsize":     11,
+    "font.size":           15,
+    "axes.labelsize":      18,
+    "axes.titlesize":      15,
+    "xtick.labelsize":     14,
+    "ytick.labelsize":     14,
     "axes.linewidth":      0.9,
     "xtick.direction":     "in",
     "ytick.direction":     "in",
@@ -37,7 +37,7 @@ plt.rcParams.update({
     "ytick.right":         True,
     "xtick.minor.visible": True,
     "ytick.minor.visible": True,
-    "legend.fontsize":     11,
+    "legend.fontsize":     14,
     "legend.framealpha":   0.9,
     "legend.edgecolor":    "#c3c2b7",
     "axes.grid":           True,
@@ -190,15 +190,15 @@ im = ax.imshow(
     extent=[F0_MIN, F0_MAX, SIGMA_MIN, SIGMA_MAX],
     vmin=0.0, vmax=1.0, cmap=cmap,
 )
-plt.colorbar(im, ax=ax, label=r"$R^2$ (ventana $\pm3\sigma$)")
-ax.set_xlabel(r"$f_0$ (cm$^{-1}$)")
+cbar = plt.colorbar(im, ax=ax)
+cbar.set_label(r"$R^2$ (ventana $\pm3\sigma$)", fontsize=18)
+ax.set_xlabel(r"$\omega_0$ (cm$^{-1}$)")
 ax.set_ylabel(r"$\sigma$ (cm$^{-1}$)")
-ax.set_title(
-    f"Calidad ajuste inverso -- dip gaussiano  [V2O5/MoO3/BaF2]\n"
-    f"EVAL_MODE={EVAL_MODE}  |  N_train={N_TRAIN}  |  gris=fuera del espectro",
-    fontsize=11)
 fig.tight_layout()
 fig.savefig(OUT_DIR / f"heatmap_r2_{EVAL_MODE}.png", dpi=200, bbox_inches="tight")
+ARREGLOS = ROOT_PATH / "Arreglos en Gráficos"
+ARREGLOS.mkdir(exist_ok=True)
+fig.savefig(ARREGLOS / "heatmap_r2_gaussiana_V2O5_MoO3.png", dpi=200, bbox_inches="tight")
 print(f"Guardado: heatmap_r2_{EVAL_MODE}.png")
 
 results_valid  = [r for r in results if not np.isnan(r['r2'])]
@@ -222,16 +222,17 @@ def plot_ejemplos(casos, titulo, fname):
         f0, sigma = r['f0'], r['sigma']
         ax = axes[k]
         ax.plot(FREQS, r['target'], color="#0b0b0b", lw=2.0, label="Objetivo gaussiano")
-        ax.plot(FREQS, r['T_pred'], color="#e34948", lw=1.4, ls="--", label="Forward NN")
-        ax.plot(FREQS, r['T_tmm'],  color="#2a78d6", lw=1.6, label="TMM")
+        ax.plot(FREQS, r['T_pred'], color="#e34948", lw=1.4, ls="--", label="Surrogate")
+        ax.plot(FREQS, r['T_tmm'],  color="#2a78d6", lw=1.6, label="Simulación")
         ax.axvspan(f0 - K*sigma, f0 + K*sigma, alpha=0.5, color="#e1e0d9", label="Ventana eval")
         ax.set_xlabel(r"$\omega$ (cm$^{-1}$)", fontsize=9)
         ax.set_ylabel(r"$T_{xx}$", fontsize=9)
         ax.set_ylim(-0.05, 1.1)
         ax.set_title(
-            f"f0={f0:.0f}  sigma={sigma:.0f}  "
-            f"th1={r['th1']:.0f}  th2={r['th2']:.0f}  d1={r['d1']:.0f}  d2={r['d2']:.0f}\n"
-            f"R2={r['r2']:.4f}  MAE={r['mae']:.4f}", fontsize=8)
+            rf"$\omega_0={f0:.0f}$ cm$^{{-1}}$, $\sigma={sigma:.0f}$ cm$^{{-1}}$" "\n"
+            rf"$\phi_1={r['th1']:.0f}^\circ$, $\phi_2={r['th2']:.0f}^\circ$, "
+            rf"$d_1={r['d1']:.0f}$ nm, $d_2={r['d2']:.0f}$ nm" "\n"
+            rf"$R^2={r['r2']:.3f}$", fontsize=9)
         ax.legend(fontsize=7)
         ax.grid(True)
     for k in range(len(casos), nrows * ncols):
@@ -240,6 +241,31 @@ def plot_ejemplos(casos, titulo, fname):
     fig.tight_layout()
     fig.savefig(OUT_DIR / fname, dpi=200, bbox_inches="tight")
     print(f"Guardado: {fname}")
+
+# ---------------------------------------------------------------------------
+# Figura individual del mejor caso (estilo TFG)
+# ---------------------------------------------------------------------------
+mejor = casos_buenos[0]
+figm, axm = plt.subplots(figsize=(5.5, 5.5))
+axm.axvspan(mejor['f0'] - K*mejor['sigma'], mejor['f0'] + K*mejor['sigma'],
+            alpha=0.5, color="#e1e0d9", zorder=0, label="Ventana eval")
+axm.plot(FREQS, mejor['target'], color="#0b0b0b", lw=2.0, label="Objetivo")
+axm.plot(FREQS, mejor['T_tmm'],  color="#2a78d6", lw=1.6, label="Simulación")
+axm.plot(FREQS, mejor['T_pred'], color="#e34948", lw=1.4, ls="--", label="Surrogate")
+axm.set_title(
+    "V$_2$O$_5$ / MoO$_3$\n"
+    + rf"$\omega_0={mejor['f0']:.0f}$ cm$^{{-1}}$, $\sigma={mejor['sigma']:.0f}$ cm$^{{-1}}$, $R^2={mejor['r2']:.3f}$" + "\n"
+    + rf"$\phi_1={mejor['th1']:.0f}^\circ$, $\phi_2={mejor['th2']:.0f}^\circ$, $d_1={mejor['d1']:.0f}$ nm, $d_2={mejor['d2']:.0f}$ nm",
+    pad=8, fontsize=13,
+)
+axm.set_xlabel(r"$\omega$ (cm$^{-1}$)")
+axm.set_ylabel(r"$T_{xx}$")
+axm.set_xlim(FREQS[0], FREQS[-1])
+axm.set_ylim(-0.02, 1.05)
+axm.legend(loc="lower right")
+figm.tight_layout()
+figm.savefig(ARREGLOS / "mejor_caso_gaussiana_V2O5_MoO3.png", dpi=200, bbox_inches="tight")
+print("Guardado: mejor_caso_gaussiana_V2O5_MoO3.png")
 
 plot_ejemplos(casos_buenos, "Mejores 6 -- dip gaussiano [V2O5/MoO3/BaF2] (eval: forward NN)", "ejemplos_buenos.png")
 plot_ejemplos(casos_malos,  "Peores 6  -- dip gaussiano [V2O5/MoO3/BaF2] (eval: forward NN)", "ejemplos_malos.png")

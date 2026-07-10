@@ -91,17 +91,19 @@ params = np.column_stack([
 # Casos: (etiqueta y, carpeta modelo, valores TMM, abs de la prediccion, salida)
 # ---------------------------------------------------------------------------
 CASOS = [
-    (r"$|\mathrm{CD}|$",
+    (r"$|CD_{\mathrm{norm}}|$",
+     r"$\mathbf{Surrogate}\ |\mathbf{CD}_{\mathbf{norm}}|$",
      ROOT / "Models" / "CD" / "MoO3_MoO3" / "Model_1seed",
      CD_true, True,
      BASE_DIR / "Evaluación" / "comparativa_cd_single.png"),
     (r"$R_{\mathrm{total}}$",
+     r"$\mathbf{Surrogate}\ \mathbf{R}_{\mathbf{total}}$",
      ROOT / "Models" / "R_total" / "MoO3_MoO3" / "Model_1seed",
      R_true, False,
      BASE_DIR / "Evaluación R_total" / "comparativa_r_total_single.png"),
 ]
 
-for ylabel, model_dir, y_true, use_abs, out_path in CASOS:
+for ylabel, title, model_dir, y_true, use_abs, out_path in CASOS:
     model = models.load_model(model_dir / "Model_1seed.h5", compile=False)
     scaler_path = model_dir / "scalers.json"
 
@@ -112,12 +114,11 @@ for ylabel, model_dir, y_true, use_abs, out_path in CASOS:
 
     fig, ax = plt.subplots(figsize=(5.5, 5.5))
 
-    ax.plot(freqs, y_true, color=COLOR_TMM, lw=2.0, label="TMM")
+    ax.plot(freqs, y_true, color=COLOR_TMM, lw=2.0, label="Simulación")
     ax.plot(freqs, y_pred, color=COLOR_NN,  lw=1.6, ls="--", label="Surrogate")
 
     ax.set_title(
-        r"MoO$_3$ / MoO$_3$" + "\n"
-        + rf"$\theta={theta}^\circ,\;d_1={d1}\,\mathrm{{nm}},\;d_2={d2}\,\mathrm{{nm}}$",
+        title,
         pad=8, fontsize=13,
     )
 

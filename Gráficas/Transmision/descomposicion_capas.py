@@ -68,6 +68,7 @@ plt.rcParams.update({
     "mathtext.fontset":    "cm",
     "font.size":           18,
     "axes.labelsize":      21,
+    "axes.titlesize":      20,
     "xtick.labelsize":     17,
     "ytick.labelsize":     17,
     "axes.linewidth":      1.0,
@@ -104,6 +105,11 @@ ax.plot(omega, T_bicapa, color=COLOR_BICAPA, lw=2.6, ls="-",
 
 ax.set_xlabel(r"$\omega$ (cm$^{-1}$)")
 ax.set_ylabel(r"$T_{xx}$")
+ax.set_title(
+    rf"$\alpha\mathrm{{-V_2O_5}}/\alpha\mathrm{{-MoO_3}}\ "
+    rf"(d_1 = {D1:.0f}\,\mathrm{{nm}},\ d_2 = {D2:.0f}\,\mathrm{{nm}})$",
+    pad=8,
+)
 ax.set_xlim(FREQ_MIN, FREQ_MAX)
 ax.set_ylim(-0.02, 1.05)
 ax.grid(True, which="both")
@@ -115,5 +121,9 @@ fig.tight_layout()
 
 out = Path(__file__).parent / "descomposicion_capas.png"
 fig.savefig(out, dpi=200, bbox_inches="tight")
+arreglo_out = ROOT_PATH / "Arreglos en Gráficos"
+arreglo_out.mkdir(exist_ok=True)
+fig.savefig(arreglo_out / "descomposicion_capas.png", dpi=300, bbox_inches="tight")
+fig.savefig(arreglo_out / "descomposicion_capas.pdf", bbox_inches="tight")
 print(f"Guardado: {out}")
 plt.show()

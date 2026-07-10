@@ -77,8 +77,12 @@ for i in range(len(todas)):
 plt.rcParams.update({
     "font.family": "serif",
     "mathtext.fontset": "cm",
-    "font.size": 12,
-    "axes.linewidth": 1.0,
+    "font.size": 18,
+    "axes.labelsize": 22,
+    "xtick.labelsize": 17,
+    "ytick.labelsize": 17,
+    "legend.fontsize": 16,
+    "axes.linewidth": 1.2,
     "xtick.direction": "in",
     "ytick.direction": "in",
     "xtick.top": True,
@@ -89,9 +93,11 @@ plt.rcParams.update({
 #  Figura
 # ============================================================
 
-fig, ax = plt.subplots(figsize=(7.6, 3.8))
+fig, ax = plt.subplots(figsize=(5.8, 4.2))
 
-ylim = (-300, 300)
+# Las resonancias de MgTeMoO6 llegan a |Re(eps)| ~ 135 (no a 300
+# como MoO3/V2O5): se ajusta el rango para aprovechar la figura
+ylim = (-160, 160)
 
 for _, (b0, b1) in todas:
     ax.axvspan(b0, b1, facecolor="0.92", edgecolor="0.65",
@@ -101,30 +107,67 @@ for b0, b1 in overlaps:
     ax.axvspan(b0, b1, facecolor="0.70", edgecolor="0.35",
                hatch="xxx", linewidth=0.0, zorder=0.2)
 
-ax.plot(w, np.real(eps_x), color="black", linewidth=1.7, linestyle="-",
+ax.plot(w, np.real(eps_x), color="black", linewidth=2.2, linestyle="-",
         label=r"$\mathrm{Re}(\varepsilon_x)$", zorder=2)
-ax.plot(w, np.real(eps_y), color="black", linewidth=1.7, linestyle="--",
+ax.plot(w, np.real(eps_y), color="black", linewidth=2.2, linestyle="--",
         label=r"$\mathrm{Re}(\varepsilon_y)$", zorder=2)
-ax.plot(w, np.real(eps_z), color="black", linewidth=1.7, linestyle=":",
+ax.plot(w, np.real(eps_z), color="black", linewidth=2.2, linestyle=":",
         label=r"$\mathrm{Re}(\varepsilon_z)$", zorder=2)
 
-ax.axhline(0, color="black", linewidth=0.8, zorder=1.5)
+# ============================================================
+#  Etiquetas RB (una por grupo de bandas solapadas, en orden
+#  ascendente de frecuencia, como en MoO3)
+# ============================================================
+
+def agrupar(bandas, gap=15):
+    bandas = sorted(bandas)
+    grupos = []
+    for b0, b1 in bandas:
+        if grupos and b0 - grupos[-1][1] < gap:
+            grupos[-1] = (grupos[-1][0], max(grupos[-1][1], b1))
+        else:
+            grupos.append((b0, b1))
+    return grupos
+
+grupos = agrupar([b for _, b in todas])
+for n, (b0, b1) in enumerate(grupos, start=1):
+    ax.text(
+        0.5 * (b0 + b1),
+        0.82 * ylim[1],
+        rf"RB$_{n}$",
+        ha="center",
+        va="center",
+        fontsize=19,
+        fontweight="bold",
+    )
+
+ax.axhline(0, color="black", linewidth=1.0, zorder=1.5)
 
 ax.set_xlim(400, 1100)
 ax.set_ylim(*ylim)
 ax.set_xlabel(r"$\omega\ (\mathrm{cm}^{-1})$")
 ax.set_ylabel(r"$\mathrm{Re}(\varepsilon)$")
-ax.set_xticks([400, 500, 600, 700, 800, 900, 1000, 1100])
+# Ticks espaciados para que sigan siendo legibles al ampliar la fuente.
+ax.set_xticks([400, 600, 800, 1000])
 ax.minorticks_on()
-ax.tick_params(which="both", direction="in", top=True, right=True)
+ax.tick_params(which="major", direction="in", top=True, right=True, width=1.2, length=6)
+ax.tick_params(which="minor", direction="in", top=True, right=True, width=1.0, length=3)
 
-ax.legend(frameon=False, loc="lower right", handlelength=2.6)
+ax.legend(
+    frameon=True,
+    facecolor="white",
+    edgecolor="0.55",
+    framealpha=1.0,
+    loc="lower right",
+    handlelength=2.4,
+)
 
 # ============================================================
 #  Guardar figura
 # ============================================================
 
-out_dir = Path(__file__).parent
+out_dir = Path(__file__).resolve().parents[2] / "Arreglos en Gráficos"
+out_dir.mkdir(exist_ok=True)
 fig.tight_layout()
 fig.savefig(out_dir / "MgTeMoO6_Re_epsilon_Reststrahlen_BW.pdf", bbox_inches="tight")
 fig.savefig(out_dir / "MgTeMoO6_Re_epsilon_Reststrahlen_BW.png", dpi=400, bbox_inches="tight")

@@ -28,6 +28,20 @@ from generalized_transfer_matrix_method import (
 )
 import utils_nn_forward as auxf
 
+
+def _make_fast_predict(model):
+    """Inferencia batched directa: mismo calculo que model.predict() pero en
+    una sola pasada del grafo, sin trocear en mini-batches de 32 ni pagar el
+    overhead por llamada de Keras."""
+    import tensorflow as tf
+    infer = tf.function(lambda x: model(x, training=False), reduce_retracing=True)
+
+    def _predict(params_norm):
+        return infer(tf.convert_to_tensor(params_norm, tf.float32)).numpy()
+
+    return _predict
+
+
 # ---------------------------------------------------------------------------
 # CONFIG
 # ---------------------------------------------------------------------------
@@ -79,17 +93,17 @@ def _init_worker():
 
     _proc_models_cd, _proc_scalers_cd = [], []
     for i in range(1, NUM_SEEDS + 1):
-        _proc_models_cd.append(tf_models.load_model(
+        _proc_models_cd.append(_make_fast_predict(tf_models.load_model(
             _CD_MODEL_DIR / f"Model_{i}seed" / f"Model_{i}seed.h5", compile=False
-        ))
-        _proc_scalers_cd.append(str(_CD_MODEL_DIR / f"Model_{i}seed" / "scalers.json"))
+        )))
+        _proc_scalers_cd.append(auxf._load_scalers(_CD_MODEL_DIR / f"Model_{i}seed" / "scalers.json"))
 
     _proc_models_rt, _proc_scalers_rt = [], []
     for i in range(1, NUM_SEEDS + 1):
-        _proc_models_rt.append(tf_models.load_model(
+        _proc_models_rt.append(_make_fast_predict(tf_models.load_model(
             _RT_MODEL_DIR / f"Model_{i}seed" / f"Model_{i}seed.h5", compile=False
-        ))
-        _proc_scalers_rt.append(str(_RT_MODEL_DIR / f"Model_{i}seed" / "scalers.json"))
+        )))
+        _proc_scalers_rt.append(auxf._load_scalers(_RT_MODEL_DIR / f"Model_{i}seed" / "scalers.json"))
 
 
 # ---------------------------------------------------------------------------
@@ -103,9 +117,11 @@ def _predict_ensemble(models_list, scalers_list, theta, d1, d2):
         FREQS,
     ])
     preds = []
-    for m, sp in zip(models_list, scalers_list):
-        batch, _ = auxf.predict(m, params_batch, _DATABASE, scaler_path=sp)
-        preds.append([abs(float(np.squeeze(v))) for v in batch])
+    for predict_fn, sc in zip(models_list, scalers_list):
+        sx, sy      = sc
+        params_norm = auxf._scale_X(params_batch, sx)
+        out         = auxf._unscale_y(predict_fn(params_norm), sy)
+        preds.append(np.abs(np.asarray(out, dtype=float).ravel()))
     return np.mean(preds, axis=0)
 
 def _predict_cd(theta, d1, d2):

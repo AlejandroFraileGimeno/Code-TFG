@@ -39,6 +39,9 @@ AZIMUTH     = -60         # Ángulo azimutal para la vista 3D (grados)
 ELEVATION   = 30          # Ángulo de elevación para la vista 3D (grados)
 # ---------------------------------------------------------------------------
 
+if len(sys.argv) > 1:  # permite: python Waterplot.py ss
+    T_COMPONENT = sys.argv[1]
+
 _T_INDEX = {"pp": 0, "ss": 1, "ps": 2, "sp": 3}
 _T_LABEL = {"pp": "xx", "ss": "yy", "ps": "xy", "sp": "yx"}
 assert T_COMPONENT in _T_INDEX, f"T_COMPONENT debe ser uno de {list(_T_INDEX)}"
@@ -71,10 +74,10 @@ FREQ_GRID, THICK_GRID = np.meshgrid(freqs, thicknesses)
 plt.rcParams.update({
     "font.family":         "serif",
     "mathtext.fontset":    "cm",
-    "font.size":           13,
-    "axes.labelsize":      14,
-    "xtick.labelsize":     12,
-    "ytick.labelsize":     12,
+    "font.size":           15,
+    "axes.labelsize":      18,
+    "xtick.labelsize":     14,
+    "ytick.labelsize":     14,
     "axes.linewidth":      0.9,
     "xtick.direction":     "in",
     "ytick.direction":     "in",
@@ -98,10 +101,18 @@ else:
     im = ax.pcolormesh(freqs, thicknesses, T_map, cmap="viridis", shading="auto",
                        rasterized=True)
     cbar = fig.colorbar(im, ax=ax, pad=0.02)
-    cbar.set_label(f"$T_{{{_label}}}$", fontsize=14)
+    cbar.set_label(f"$T_{{{_label}}}$", fontsize=18)
     cbar.outline.set_linewidth(0.9)
     ax.set_xlabel(r"$\omega$ (cm$^{-1}$)")
     ax.set_ylabel("Espesor (nm)")
 
 fig.tight_layout()
+
+out = ROOT_PATH / "Arreglos en Gráficos"
+out.mkdir(exist_ok=True)
+fname = f"mapa_T{_label}_espesor_{MATERIAL.__name__}_{SUBSTRATE.__name__}"
+fig.savefig(out / f"{fname}.png", dpi=300, bbox_inches="tight")
+fig.savefig(out / f"{fname}.pdf", bbox_inches="tight")
+print(f"Guardado en: {out / (fname + '.png')}")
+
 plt.show()

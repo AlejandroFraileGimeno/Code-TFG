@@ -17,10 +17,10 @@ import matplotlib.pyplot as plt
 # ============================================================
 # CONFIG — edita aquí antes de ejecutar
 # ============================================================
-PAIR       = "MoO3_V2O5"   # par de materiales
-D1_NM      = 400                # espesor capa 1 (nm)
-D2_NM      = 900               # espesor capa 2 (nm)
-THETA_STEP = 0.1                  # paso en grados (1 = 181 puntos)
+PAIR       = "MoO3_MoO3"   # par de materiales
+D1_NM      = 750                # espesor capa 1 (nm)
+D2_NM      = 1200               # espesor capa 2 (nm)
+THETA_STEP = 1                  # paso en grados (1 = 181 puntos)
 USE_TMM    = True              # False = NN (rápido)  |  True = TMM (exacto)
 NUM_SEEDS  = 1                  # solo para modo NN
 # ============================================================
@@ -142,11 +142,11 @@ modo_str = "TMM" if USE_TMM else "NN"
 plt.rcParams.update({
     "font.family":         "serif",
     "mathtext.fontset":    "cm",
-    "font.size":           13,
-    "axes.labelsize":      14,
-    "axes.titlesize":      13,
-    "xtick.labelsize":     12,
-    "ytick.labelsize":     12,
+    "font.size":           15,
+    "axes.labelsize":      18,
+    "axes.titlesize":      15,
+    "xtick.labelsize":     14,
+    "ytick.labelsize":     14,
     "axes.linewidth":      0.9,
     "xtick.direction":     "in",
     "ytick.direction":     "in",
@@ -161,20 +161,20 @@ im   = ax.pcolormesh(
     rasterized=True,
 )
 cbar = fig.colorbar(im, ax=ax, pad=0.02)
-cbar.set_label(rf"$|\mathrm{{CD}}|$ normalizado ({modo_str})")
+cbar.set_label(r"$|CD_{\mathrm{norm}}|$", fontsize=18)
 cbar.outline.set_linewidth(0.9)
 
 ax.set_xlabel(r"$\omega$ (cm$^{-1}$)")
-ax.set_ylabel(r"$\varphi$ (°)")
+ax.set_ylabel(r"$\phi_1$ (°)")
+ax.set_title(r"Variación $\phi$ MoO$_3$/MoO$_3$", fontweight="bold", pad=8)
 ax.set_yticks(np.arange(0, 181, 30))
-ax.set_title(
-    f"Water-plot CD — {PAIR.replace('_', '/')}   "
-    rf"$d_1$={D1_NM:.0f} nm  $d_2$={D2_NM:.0f} nm  [{modo_str}]",
-)
 fig.tight_layout()
 
 out = Path(__file__).parent / f"theta_sweep_{PAIR}_d1{D1_NM:.0f}_d2{D2_NM:.0f}_{modo_str}.png"
 fig.savefig(out, dpi=200, bbox_inches="tight")
+ARREGLOS = ROOT_PATH / "Arreglos en Gráficos"
+ARREGLOS.mkdir(exist_ok=True)
+fig.savefig(ARREGLOS / f"waterplot_CD_{PAIR}_d1{D1_NM:.0f}_d2{D2_NM:.0f}.png", dpi=200, bbox_inches="tight")
 print(f"Guardado: {out.name}")
 
 plt.show()

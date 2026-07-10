@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Visualizacion del barrido DE — MoO3/V2O5
 """
@@ -15,23 +15,23 @@ import matplotlib.pyplot as plt
 plt.rcParams.update({
     "font.family":         "serif",
     "mathtext.fontset":    "cm",
-    "font.size":           12,
-    "axes.labelsize":      13,
-    "axes.titlesize":      12,
-    "xtick.labelsize":     11,
-    "ytick.labelsize":     11,
-    "axes.linewidth":      0.9,
+    "font.size":           18,
+    "axes.labelsize":      22,
+    "axes.titlesize":      21,
+    "xtick.labelsize":     17,
+    "ytick.labelsize":     17,
+    "axes.linewidth":      1.1,
     "xtick.direction":     "in",
     "ytick.direction":     "in",
     "xtick.top":           True,
     "ytick.right":         True,
     "xtick.minor.visible": True,
     "ytick.minor.visible": True,
-    "legend.fontsize":     11,
+    "legend.fontsize":     15,
     "legend.framealpha":   0.9,
     "legend.edgecolor":    "#c3c2b7",
     "axes.grid":           True,
-    "grid.linewidth":      0.5,
+    "grid.linewidth":      0.6,
     "grid.alpha":          0.35,
     "grid.linestyle":      "--",
 })
@@ -64,7 +64,7 @@ print(f"  {len(targets_cm)} targets  |  frecuencias {freqs[0]:.0f}-{freqs[-1]:.0
 # ---------------------------------------------------------------------------
 # Figura 1 — Heatmap |CD|_TMM
 # ---------------------------------------------------------------------------
-fig1, ax1 = plt.subplots(figsize=(11, 6))
+fig1, ax1 = plt.subplots(figsize=(9.6, 4.4))
 
 vmax = np.max(CD_matrix)
 im   = ax1.pcolormesh(
@@ -72,20 +72,27 @@ im   = ax1.pcolormesh(
     cmap="inferno", shading="auto",
     vmin=0, vmax=vmax, rasterized=True,
 )
-cbar = fig1.colorbar(im, ax=ax1)
-cbar.set_label(r"$|\mathrm{CD}|$ normalizado (TMM)")
+cbar = fig1.colorbar(im, ax=ax1, pad=0.025)
+cbar.set_label(r"$|CD_{\mathrm{norm}}|$", fontsize=21)
+cbar.ax.tick_params(labelsize=16, width=1.0, length=4)
 
 f_diag = [max(freqs[0], targets_cm[0]), min(freqs[-1], targets_cm[-1])]
-ax1.plot(f_diag, f_diag, "w--", lw=1.2, alpha=0.6, label=r"target = $\omega$")
+ax1.plot(f_diag, f_diag, "w--", lw=1.6, alpha=0.7, label=r"$\omega_{\mathrm{obj}} = \omega$")
 
-ax1.set_xlabel(r"$\omega$ (cm$^{-1}$)", fontsize=13)
-ax1.set_ylabel(r"$\omega_\mathrm{target}$ (cm$^{-1}$)")
-ax1.set_title("Barrido DE - MoO3/V2O5   |CD| optimo", fontsize=13)
-ax1.legend(fontsize=10)
+ax1.set_xlabel(r"$\omega$ (cm$^{-1}$)")
+ax1.set_ylabel(r"$\omega_{\mathrm{obj}}$ (cm$^{-1}$)")
+ax1.set_title(r"MoO$_3$/V$_2$O$_5$", fontsize=21, fontweight="bold", pad=10)
+ax1.tick_params(which="major", width=1.1, length=5)
+ax1.tick_params(which="minor", width=0.9, length=3)
+ax1.legend(fontsize=15, loc="upper left")
 fig1.tight_layout()
 
 out1 = RESULTS_DIR / "heatmap_CD.png"
 fig1.savefig(out1, dpi=200, bbox_inches="tight")
+ARREGLOS = Path(__file__).resolve().parents[5] / "Arreglos en Gráficos"
+ARREGLOS.mkdir(exist_ok=True)
+fig1.savefig(ARREGLOS / "barrido_DE_CD_MoO3_V2O5.png", dpi=200, bbox_inches="tight")
+fig1.savefig(ARREGLOS / "barrido_DE_CD_MoO3_V2O5.pdf", bbox_inches="tight")
 print(f"Guardado: {out1.name}")
 
 # ---------------------------------------------------------------------------
@@ -111,7 +118,7 @@ axes[2].legend(fontsize=10)
 
 axes[3].plot(targets_cm, foms, "o-", ms=3, color="#2a78d6", lw=1.2)
 axes[3].set_ylabel("FoM (NN)", fontsize=12)
-axes[3].set_xlabel(r"$\omega_\mathrm{target}$ (cm$^{-1}$)")
+axes[3].set_xlabel(r"$\omega_{\mathrm{obj}}$ (cm$^{-1}$)")
 axes[3].grid(True, alpha=0.3)
 
 fig2.suptitle("Parametros optimos por target - MoO3/V2O5", fontsize=13)

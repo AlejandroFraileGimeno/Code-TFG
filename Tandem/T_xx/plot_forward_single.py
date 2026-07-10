@@ -143,8 +143,8 @@ for titulo, model_dir, make_layers, out_path in PARES:
     # Parámetros en el título (dos líneas)
     ax.set_title(
         titulo + "\n"
-        + rf"$\theta_1={th1:.0f}^\circ,\;\theta_2={th2:.0f}^\circ,\;d_1={d1:.0f}\,\mathrm{{nm}},\;d_2={d2:.0f}\,\mathrm{{nm}}$",
-        pad=8, fontsize=13,
+        + rf"$\phi_1={th1:.0f}^\circ,\;\phi_2={th2:.0f}^\circ,\;d_1={d1:.0f}\,\mathrm{{nm}},\;d_2={d2:.0f}\,\mathrm{{nm}}$",
+        pad=8, fontsize=15,
     )
 
     ax.set_xlabel(r"$\omega$ (cm$^{-1}$)")
@@ -157,7 +157,9 @@ for titulo, model_dir, make_layers, out_path in PARES:
     ax.yaxis.set_minor_locator(ticker.AutoMinorLocator())
 
     fig.tight_layout()
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_path, dpi=200, bbox_inches="tight")
-    print(f"Guardado: {out_path}")
+    out_dir = Path(__file__).resolve().parents[2] / "Arreglos en Gráficos"
+    out_dir.mkdir(exist_ok=True)
+    out_file = out_dir / f"{out_path.stem}_{out_path.parts[-3]}.png"
+    fig.savefig(out_file, dpi=200, bbox_inches="tight")
+    print(f"Guardado: {out_file}")
     plt.show()

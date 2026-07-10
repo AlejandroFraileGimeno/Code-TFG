@@ -59,13 +59,13 @@ from tensorflow.keras import models as tf_models
 # ---------------------------------------------------------------------------
 # CONFIG — edita aquí
 # ---------------------------------------------------------------------------
-TARGET_WAVELENGTH_UM = 15.4    # µm  (longitud de onda objetivo)
-WINDOW_CM            = 50.0    # cm⁻¹ (ventana de búsqueda del pico)
-NUM_SEEDS            = 5       # modelos del ensemble
+TARGET_WAVELENGTH_UM = None    # µm  (None = maximizar CD global)
+WINDOW_CM            = 10.0    # cm⁻¹ (solo si TARGET_WAVELENGTH_UM no es None)
+NUM_SEEDS            = 1       # modelos del ensemble
 C1                   = 1.0    # peso de CD_norm  (dominante)
 C2                   = 0.1    # peso de R_total  (secundario)
-MAXITER              = 200     # generaciones máximas del DE
-POPSIZE              = 15      # individuos por parámetro (población = 15 × 3 = 45)
+MAXITER              = 500     # generaciones máximas del DE
+POPSIZE              = 35      # individuos por parámetro
 BOUNDS = [                     # [theta (°), d1 (nm), d2 (nm)]
     (0,   180),
     (200, 2000),
@@ -82,6 +82,20 @@ from generalized_transfer_matrix_method import (
 )
 import utils_nn_forward as auxf
 
+
+def _make_fast_predict(model):
+    """Inferencia batched directa: mismo calculo que model.predict() pero en
+    una sola pasada del grafo, sin trocear en mini-batches de 32 ni pagar el
+    overhead por llamada de Keras."""
+    import tensorflow as tf
+    infer = tf.function(lambda x: model(x, training=False), reduce_retracing=True)
+
+    def _predict(params_norm):
+        return infer(tf.convert_to_tensor(params_norm, tf.float32)).numpy()
+
+    return _predict
+
+
 # ---------------------------------------------------------------------------
 # Cargar ensemble de modelos (una sola vez)
 # ---------------------------------------------------------------------------
@@ -95,20 +109,21 @@ _DATABASE     = str(ROOT_PATH / "Datasets" / "CD" / "MoO3_MoO3")
 print(f"Cargando {NUM_SEEDS} modelos CD_norm...")
 _models_cd, _scalers_cd = [], []
 for i in range(1, NUM_SEEDS + 1):
-    _models_cd.append(tf_models.load_model(
+    _models_cd.append(_make_fast_predict(tf_models.load_model(
         _CD_MODEL_DIR / f"Model_{i}seed" / f"Model_{i}seed.h5", compile=False
-    ))
-    _scalers_cd.append(str(_CD_MODEL_DIR / f"Model_{i}seed" / "scalers.json"))
+    )))
+    _scalers_cd.append(auxf.load_scalers(_CD_MODEL_DIR / f"Model_{i}seed" / "scalers.json"))
 
 print(f"Cargando {NUM_SEEDS} modelos R_total...")
 _models_rt, _scalers_rt = [], []
 for i in range(1, NUM_SEEDS + 1):
-    _models_rt.append(tf_models.load_model(
+    _models_rt.append(_make_fast_predict(tf_models.load_model(
         _RT_MODEL_DIR / f"Model_{i}seed" / f"Model_{i}seed.h5", compile=False
-    ))
-    _scalers_rt.append(str(_RT_MODEL_DIR / f"Model_{i}seed" / "scalers.json"))
+    )))
+    _scalers_rt.append(auxf.load_scalers(_RT_MODEL_DIR / f"Model_{i}seed" / "scalers.json"))
 
-print(f"Listo. Target: {TARGET_WAVELENGTH_UM} um  ({TARGET_FREQ_CM:.1f} cm-1)\n")
+target_str = f"{TARGET_WAVELENGTH_UM} um  ({TARGET_FREQ_CM:.1f} cm-1)" if TARGET_WAVELENGTH_UM else "ninguno (maximizar CD global)"
+print(f"Listo. Target: {target_str}\n")
 
 
 # ---------------------------------------------------------------------------
@@ -122,9 +137,12 @@ def _predict_ensemble(models_list, scalers_list, theta, d1, d2):
         FREQS,
     ])
     preds = []
-    for m, sp in zip(models_list, scalers_list):
-        batch, _ = auxf.predict(m, params_batch, _DATABASE, scaler_path=sp)
-        preds.append([abs(float(np.squeeze(v))) for v in batch])
+    for predict_fn, sc in zip(models_list, scalers_list):
+        params_norm = auxf.normalize_data(params_batch, sc["feature_min"], sc["feature_max"])
+        out_std     = predict_fn(params_norm)
+        out_norm    = auxf.unstandardize_data(out_std, sc["y_mean"], sc["y_std"])
+        out         = auxf.unnormalize_data(out_norm, sc["cd_min"], sc["cd_max"])
+        preds.append(np.abs(np.asarray(out, dtype=float).ravel()))
     return np.mean(preds, axis=0)
 
 def _predict_cd(theta, d1, d2):

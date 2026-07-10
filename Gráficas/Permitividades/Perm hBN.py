@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -64,8 +66,12 @@ eps_par_UR  = epsilon_tolo(w_UR, **params["epsilon_par"])
 plt.rcParams.update({
     "font.family": "serif",
     "mathtext.fontset": "cm",
-    "font.size": 12,
-    "axes.linewidth": 1.0,
+    "font.size": 18,
+    "axes.labelsize": 22,
+    "xtick.labelsize": 17,
+    "ytick.labelsize": 17,
+    "legend.fontsize": 16,
+    "axes.linewidth": 1.2,
     "xtick.direction": "in",
     "ytick.direction": "in",
     "xtick.top": True,
@@ -80,7 +86,7 @@ plt.rcParams.update({
 fig, (ax1, ax2) = plt.subplots(
     1, 2,
     sharey=True,
-    figsize=(7.6, 3.8),
+    figsize=(5.8, 4.2),
     gridspec_kw={
         "width_ratios": [1.0, 2.15],
         "wspace": 0.06
@@ -109,7 +115,7 @@ ax1.axvspan(
 ax1.plot(
     w_LR, np.real(eps_par_LR),
     color="black",
-    linewidth=1.7,
+    linewidth=2.2,
     linestyle="-",
     label=r"$\mathrm{Re}(\varepsilon_{\parallel})$"
 )
@@ -117,7 +123,7 @@ ax1.plot(
 ax1.plot(
     w_LR, np.real(eps_perp_LR),
     color="black",
-    linewidth=1.7,
+    linewidth=2.2,
     linestyle="--",
     label=r"$\mathrm{Re}(\varepsilon_{\perp})$"
 )
@@ -128,7 +134,7 @@ ax1.text(
     "LR",
     ha="center",
     va="center",
-    fontsize=13,
+    fontsize=19,
     fontweight="bold"
 )
 
@@ -152,7 +158,7 @@ ax2.axvspan(
 ax2.plot(
     w_UR, np.real(eps_par_UR),
     color="black",
-    linewidth=1.7,
+    linewidth=2.2,
     linestyle="-",
     label=r"$\mathrm{Re}(\varepsilon_{\parallel})$"
 )
@@ -160,7 +166,7 @@ ax2.plot(
 ax2.plot(
     w_UR, np.real(eps_perp_UR),
     color="black",
-    linewidth=1.7,
+    linewidth=2.2,
     linestyle="--",
     label=r"$\mathrm{Re}(\varepsilon_{\perp})$"
 )
@@ -171,7 +177,7 @@ ax2.text(
     "UR",
     ha="center",
     va="center",
-    fontsize=13,
+    fontsize=19,
     fontweight="bold"
 )
 
@@ -181,17 +187,19 @@ ax2.text(
 # ============================================================
 
 for ax in (ax1, ax2):
-    ax.axhline(0, color="black", linewidth=0.8)
+    ax.axhline(0, color="black", linewidth=1.0)
     ax.set_ylim(*ylim)
-    ax.tick_params(which="both", direction="in", top=True, right=True)
+    ax.tick_params(which="major", direction="in", top=True, right=True, width=1.2, length=6)
+    ax.tick_params(which="minor", direction="in", top=True, right=True, width=1.0, length=3)
     ax.minorticks_on()
 
 ax1.set_xlim(700, 850)
 ax2.set_xlim(1300, 1650)
 
-# Ticks principales limpios
+# Ticks principales limpios (sin 1300: con el corte del eje se solapaba
+# con 1360, y el valor físico relevante es el w_TO)
 ax1.set_xticks([700, 760, 825])
-ax2.set_xticks([1300, 1360, 1450, 1614])
+ax2.set_xticks([1360, 1450, 1614])
 
 ax1.set_ylabel(r"$\mathrm{Re}(\varepsilon)$")
 
@@ -232,18 +240,22 @@ ax2.plot([0], [1], transform=ax2.transAxes, **kwargs)
 # ============================================================
 
 ax2.legend(
-    frameon=False,
+    frameon=True,
+    facecolor="white",
+    edgecolor="0.55",
+    framealpha=1.0,
     loc="lower right",
-    handlelength=2.6
+    handlelength=2.4
 )
 
-fig.subplots_adjust(bottom=0.22)
+fig.subplots_adjust(bottom=0.15)
 
 fig.text(
-    0.52, 0.06,
+    0.52, 0.035,
     r"$\omega\ (\mathrm{cm}^{-1})$",
     ha="center",
-    va="center"
+    va="center",
+    fontsize=22
 )
 
 
@@ -251,7 +263,10 @@ fig.text(
 #  Guardar figura
 # ============================================================
 
-plt.savefig("hBN_Re_epsilon_Reststrahlen_BW.pdf", bbox_inches="tight")
-plt.savefig("hBN_Re_epsilon_Reststrahlen_BW.png", dpi=400, bbox_inches="tight")
+out = Path(__file__).resolve().parents[2] / "Arreglos en Gráficos"
+out.mkdir(exist_ok=True)
+plt.savefig(out / "hBN_Re_epsilon_Reststrahlen_BW.pdf", bbox_inches="tight")
+plt.savefig(out / "hBN_Re_epsilon_Reststrahlen_BW.png", dpi=400, bbox_inches="tight")
+print(f"Guardado en: {out}")
 
 plt.show()
